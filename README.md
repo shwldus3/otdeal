@@ -19,15 +19,3 @@ This README would normally document whatever steps are necessary to get your app
    2) commit
    3) push
    4) 원격 웹페이지에서 확인하기
-
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
