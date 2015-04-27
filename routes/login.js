@@ -2,33 +2,33 @@ var express = require('express');
 var router = express.Router();
 
 /*
- ¾÷¹«¸í : ÆäÀÌ½ººÏ·Î±×ÀÎ
- Àü¼Û¹æ½Ä : get
+ ì—…ë¬´ëª… : í˜ì´ìŠ¤ë¶ë¡œê·¸ì¸
+ ì „ì†¡ë°©ì‹ : get
  url : /login/facebook
  */
 router.get('/facebook', function(req, res, next) {
-  var access_token = "123"; // ³ªÁß¿¡ fbgraph Âü°íÇÏ±â.
+  var access_token = "123"; // ë‚˜ì¤‘ì— fbgraph ì°¸ê³ í•˜ê¸°.
 
-  res.json({success : 1, msg : "¼º°øÀûÀ¸·Î ¼öÇàµÇ¾ú½À´Ï´Ù.", result : "success"});
+  res.json({success : 1, msg : "ì„±ê³µì ìœ¼ë¡œ ìˆ˜í–‰ë˜ì—ˆìŠµë‹ˆë‹¤.", result : "success"});
 
 });
 
 /*
- ¾÷¹«¸í : ÆäÀÌ½ººÏ¿¡¼­ ÅäÅ«À¸·Î ¹ŞÀº Á¤º¸ µğºñ¿¡ ÀúÀå...¾ğÁ¨°¡ ¾²°ÚÁö¹¹
- Àü¼Û¹æ½Ä : post
+ ì—…ë¬´ëª… : í˜ì´ìŠ¤ë¶ì—ì„œ í† í°ìœ¼ë¡œ ë°›ì€ ì •ë³´ ë””ë¹„ì— ì €ì¥...ì–¸ì  ê°€ ì“°ê² ì§€ë­
+ ì „ì†¡ë°©ì‹ : post
  url : /login/facebook
  */
 router.post('/facebook', function(req, res, next) {
-  var access_token = "123"; // ³ªÁß¿¡ fbgraph Âü°íÇÏ±â.
+  var access_token = "123"; // ë‚˜ì¤‘ì— fbgraph ì°¸ê³ í•˜ê¸°.
 
-  var output = { // µğºñ¿¡ ³ÖÀ» Á¤º¸´Â ³ªÁß¿¡ ´õ Ãß°¡.
+  var output = { // ë””ë¹„ì— ë„£ì„ ì •ë³´ëŠ” ë‚˜ì¤‘ì— ë” ì¶”ê°€.
     "email" : "gfdjkl@naver.com"
   };
 
   if(output){
-    res.json({success : 1, msg : "¼º°øÀûÀ¸·Î ¼öÇàµÇ¾ú½À´Ï´Ù.", result : output});
+    res.json({success : 1, msg : "ì„±ê³µì ìœ¼ë¡œ ìˆ˜í–‰ë˜ì—ˆìŠµë‹ˆë‹¤.", result : output});
   } else {
-    res.json({success : 0, msg : "¿¡·¯°¡ ¹ß»ıÇÏ¿´½À´Ï´Ù.", result : "fail"});
+    res.json({success : 0, msg : "ì—ëŸ¬ê°€ ë°œìƒí•˜ì˜€ìŠµë‹ˆë‹¤.", result : "fail"});
   }
 });
 module.exports = router;
