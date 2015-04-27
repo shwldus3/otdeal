@@ -4,11 +4,16 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var compression = require('compression');
+var express = require('express');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var compression = require('compression');
-var express = require('express');
+var login = require('./routes/login');
+var main = require('./routes/main');
+var item = require('./routes/item');
+var mypage = require('./routes/mypage');
+var setting = require('./routes/setting');
 
 var app = express();
 
@@ -27,6 +32,11 @@ app.use(compression());
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/login', login);
+app.use('/main', main);
+app.use('/item', item);
+app.use('/mypage', mypage);
+app.use('/setting', setting);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

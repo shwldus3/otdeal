@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.post('/style', function(req, res, next) {
+	var output = {"user_id": "Q24S14"};
+	res.json({result:output});
 });
 
 module.exports = router;
