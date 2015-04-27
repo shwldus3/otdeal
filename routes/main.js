@@ -32,28 +32,38 @@ router.get('/recmd/item', function(req, res, next) {
 		"itemArr" : [{
 			"item_seq" : "1",
 			"item_id" : "1",
-			"item_name" : "원피스",
+			"item_name" : "원피스단일상품",
 			"item_price" : "30,000",
 			"item_saleprice" : "15,000",
 			"item_sale" : "50%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "4",
+				"path" : "/item/thumbnail",
+				"img_name" : "img4.jpg"
+			}
 		}, {
 			"item_seq" : "2",
-			"item_id" : "14",
-			"item_name" : "바지",
+			"item_id" : "2",
+			"item_name" : "바지그룹상품",
 			"item_price" : "55,000",
 			"item_saleprice" : "45,000",
 			"item_sale" : "19%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "0"
+			"item_like_yn" : "0",
+			"thumbnail" : {
+				"img_id" : "9",
+				"path" : "/item/thumbnail",
+				"img_name" : "img9.jpg"
+			}
 		}, {
 			"item_seq" : "3",
-			"item_id" : "8",
+			"item_id" : "3",
 			"item_name" : "아우터",
 			"item_price" : "100,000",
 			"item_saleprice" : "85,000",
@@ -61,7 +71,12 @@ router.get('/recmd/item', function(req, res, next) {
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "10",
+				"path" : "/item/thumbnail",
+				"img_name" : "img10.jpg"
+			}
 		}],
 		"cnt" : "3"
 	};
@@ -84,28 +99,38 @@ router.get('/recmd/oneforyou', function(req, res, next) {
 		"itemArr" : [{
 			"item_seq" : "1",
 			"item_id" : "1",
-			"item_name" : "원피스",
+			"item_name" : "원피스단일상품",
 			"item_price" : "30,000",
 			"item_saleprice" : "15,000",
 			"item_sale" : "50%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "4",
+				"path" : "/item/thumbnail",
+				"img_name" : "img4.jpg"
+			}
 		}, {
 			"item_seq" : "2",
-			"item_id" : "14",
-			"item_name" : "바지",
+			"item_id" : "2",
+			"item_name" : "바지그룹상품",
 			"item_price" : "55,000",
 			"item_saleprice" : "45,000",
 			"item_sale" : "19%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "0"
+			"item_like_yn" : "0",
+			"thumbnail" : {
+				"img_id" : "9",
+				"path" : "/item/thumbnail",
+				"img_name" : "img9.jpg"
+			}
 		}, {
 			"item_seq" : "3",
-			"item_id" : "8",
+			"item_id" : "3",
 			"item_name" : "아우터",
 			"item_price" : "100,000",
 			"item_saleprice" : "85,000",
@@ -113,7 +138,12 @@ router.get('/recmd/oneforyou', function(req, res, next) {
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "10",
+				"path" : "/item/thumbnail",
+				"img_name" : "img10.jpg"
+			}
 		}],
 		"cnt" : "3"
 	};
@@ -136,28 +166,38 @@ router.get('/recmd/like', function(req, res, next) {
 		"itemArr" : [{
 			"item_seq" : "1",
 			"item_id" : "1",
-			"item_name" : "원피스",
+			"item_name" : "원피스단일상품",
 			"item_price" : "30,000",
 			"item_saleprice" : "15,000",
 			"item_sale" : "50%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "4",
+				"path" : "/item/thumbnail",
+				"img_name" : "img4.jpg"
+			}
 		}, {
 			"item_seq" : "2",
-			"item_id" : "14",
-			"item_name" : "바지",
+			"item_id" : "2",
+			"item_name" : "바지그룹상품",
 			"item_price" : "55,000",
 			"item_saleprice" : "45,000",
 			"item_sale" : "19%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "0"
+			"item_like_yn" : "0",
+			"thumbnail" : {
+				"img_id" : "9",
+				"path" : "/item/thumbnail",
+				"img_name" : "img9.jpg"
+			}
 		}, {
 			"item_seq" : "3",
-			"item_id" : "8",
+			"item_id" : "3",
 			"item_name" : "아우터",
 			"item_price" : "100,000",
 			"item_saleprice" : "85,000",
@@ -165,7 +205,12 @@ router.get('/recmd/like', function(req, res, next) {
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "10",
+				"path" : "/item/thumbnail",
+				"img_name" : "img10.jpg"
+			}
 		}],
 		"cnt" : "3"
 	};
@@ -189,28 +234,38 @@ router.get('/category', function(req, res, next) {
 		"itemArr" : [{
 			"item_seq" : "1",
 			"item_id" : "1",
-			"item_name" : "원피스",
+			"item_name" : "원피스단일상품",
 			"item_price" : "30,000",
 			"item_saleprice" : "15,000",
 			"item_sale" : "50%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "4",
+				"path" : "/item/thumbnail",
+				"img_name" : "img4.jpg"
+			}
 		}, {
 			"item_seq" : "2",
-			"item_id" : "14",
-			"item_name" : "바지",
+			"item_id" : "2",
+			"item_name" : "바지그룹상품",
 			"item_price" : "55,000",
 			"item_saleprice" : "45,000",
 			"item_sale" : "19%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "0"
+			"item_like_yn" : "0",
+			"thumbnail" : {
+				"img_id" : "9",
+				"path" : "/item/thumbnail",
+				"img_name" : "img9.jpg"
+			}
 		}, {
 			"item_seq" : "3",
-			"item_id" : "8",
+			"item_id" : "3",
 			"item_name" : "아우터",
 			"item_price" : "100,000",
 			"item_saleprice" : "85,000",
@@ -218,7 +273,12 @@ router.get('/category', function(req, res, next) {
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "10",
+				"path" : "/item/thumbnail",
+				"img_name" : "img10.jpg"
+			}
 		}],
 		"cnt" : "3"
 	};
@@ -242,28 +302,38 @@ router.get('/recent', function(req, res, next) {
 		"itemArr" : [{
 			"item_seq" : "1",
 			"item_id" : "1",
-			"item_name" : "원피스",
+			"item_name" : "원피스단일상품",
 			"item_price" : "30,000",
 			"item_saleprice" : "15,000",
 			"item_sale" : "50%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "4",
+				"path" : "/item/thumbnail",
+				"img_name" : "img4.jpg"
+			}
 		}, {
 			"item_seq" : "2",
-			"item_id" : "14",
-			"item_name" : "바지",
+			"item_id" : "2",
+			"item_name" : "바지그룹상품",
 			"item_price" : "55,000",
 			"item_saleprice" : "45,000",
 			"item_sale" : "19%",
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "0"
+			"item_like_yn" : "0",
+			"thumbnail" : {
+				"img_id" : "9",
+				"path" : "/item/thumbnail",
+				"img_name" : "img9.jpg"
+			}
 		}, {
 			"item_seq" : "3",
-			"item_id" : "8",
+			"item_id" : "3",
 			"item_name" : "아우터",
 			"item_price" : "100,000",
 			"item_saleprice" : "85,000",
@@ -271,7 +341,12 @@ router.get('/recent', function(req, res, next) {
 			"launch_date" : "2015-01-01",
 			"item_regdate" : "2015-04-27",
 			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "1"
+			"item_like_yn" : "1",
+			"thumbnail" : {
+				"img_id" : "10",
+				"path" : "/item/thumbnail",
+				"img_name" : "img10.jpg"
+			}
 		}],
 		"cnt" : "3"
 	};
@@ -303,7 +378,7 @@ router.get('/qna', function(req, res, next) {
 			"qna_regtime" : ""
 		}, {
 			"qna_seq" : "2",
-			"qna_id" : "5",
+			"qna_id" : "2",
 			"qna_title" : "상품 문의드립니다",
 			"qna_content" : "컬러감이 사진 그대로 나오나요?",
 			"qna_gubun" : "0",//비밀글 아님
@@ -313,7 +388,7 @@ router.get('/qna', function(req, res, next) {
 			"qna_regtime" : ""
 		}, {
 			"qna_seq" : "3",
-			"qna_id" : "20",
+			"qna_id" : "3",
 			"qna_title" : "상품 문의드립니다",
 			"qna_content" : "사진에 나오는 모델 실 사이즈가 어떻게 되나요?",
 			"qna_gubun" : "1",//비밀글 아님
@@ -345,9 +420,9 @@ router.post('/qna', function(req, res, next) {
 	var qna_parentid = "";
 	var output = "ok";
 	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:"success" });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다.", result:"false" });
 	}
 });
 
@@ -362,9 +437,9 @@ router.post('/like', function(req, res, next) {
 	var item_id = "";
 	var output = "ok";
 	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다." });
+			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:"success" });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다.", result:"false" });
 	}
 });
 
