@@ -13,7 +13,7 @@ router.get('/style', function(req, res, next) {
   };
 
   if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output}); // 모바일서버의 경우
+    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output});
   } else {
     res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
   }
@@ -35,7 +35,7 @@ router.post('/style', function(req, res, next) {
   };
 
   if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output}); // 모바일서버의 경우
+    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output});
   } else {
     res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
   }
@@ -46,17 +46,38 @@ router.post('/style', function(req, res, next) {
 router.get('/basket', function(req, res, next) {
   var user_id = "riuqlfjsdkjfkls";
 
-  var output = {
+  var outputs = [
+    {
     "item_name" : "흰셔츠",
     "bsk_cnt" : "1",
-    "color_name" : "black",
+    "color_name" : "white",
     "item_price" : "45000",
     "total_price" : "45000",
     "bsk_regdate" : "2015-04-27",
     "bsk_regtime" : "2015-04-27 14:19:00"
-};
-  if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output}); // 모바일서버의 경우
+    },
+    {
+      "item_name" : "노랑셔츠",
+      "bsk_cnt" : "1",
+      "color_name" : "yellow",
+      "item_price" : "45000",
+      "total_price" : "45000",
+      "bsk_regdate" : "2015-04-27",
+      "bsk_regtime" : "2015-04-27 15:10:00"
+    },
+    {
+      "item_name" : "파랑셔츠",
+      "bsk_cnt" : "1",
+      "color_name" : "blue",
+      "item_price" : "45000",
+      "total_price" : "45000",
+      "bsk_regdate" : "2015-04-27",
+      "bsk_regtime" : "2015-04-27 15:11:00"
+    }
+  ];
+
+  if(outputs){
+    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : outputs});
   } else {
     res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
   }
@@ -64,8 +85,10 @@ router.get('/basket', function(req, res, next) {
 
 // 마이페이지-장바구니-수정하기
 router.post('/basket', function(req, res, next) {
-  var user_id = "riuqlfjsdkjfkls";
-  var bsk_id = "1";
+  var item_size = "55";
+  var bsk_cnt = "3";
+  var bsk_regdate = "2015-04-27";
+  var bsk_regtime = "2015-04-27 15:20:00";
 
   var output = {
     "item_size" : "55",
@@ -74,7 +97,7 @@ router.post('/basket', function(req, res, next) {
     "bsk_regtime" : "2015-04-27 14:24:00"
   };
   if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output}); // 모바일서버의 경우
+    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output});
   } else {
     res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
   }
@@ -82,10 +105,11 @@ router.post('/basket', function(req, res, next) {
 
 // 마이페이지-주문배송내역-회원주문내역
 router.get('/order', function(req, res, next) {
-  var user_id = req.body.user_id;
-  var order_id = req.body.order_id;
+  var user_id = "riuqlfjsdkjfkls";
+  var order_id = "20150427123456";
 
-  var output = {
+  var output = [
+    {
     "order_id" : "20150427123456",
     "total_price" : "45000",
     "item_name" : "흰셔츠",
@@ -94,17 +118,37 @@ router.get('/order', function(req, res, next) {
     "order_regdate" : "2015-04-27",
     "order_regtime" : "2015-04-27 14:39:00",
     "dlvr_stat" : "1"
-  };
+    },
+    {
+      "order_id" : "20150425234567",
+      "total_price" : "36000",
+      "item_name" : "노랑셔츠",
+      "order_cnt" : "1",
+      "order_paystat" : "결제완료",
+      "order_regdate" : "2015-04-25",
+      "order_regtime" : "2015-04-25 10:17:40",
+      "dlvr_stat" : "2"
+    }
+  ];
   if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output}); // 모바일서버의 경우
+    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output});
   } else {
     res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
   }
 });
 
-router.post('/order', function(req, res, next) {
+
+// 마이페이지-주문배송내역-주문,배송취소
+router.post('/order/delete', function(req, res, next) {
   var user_id = "riuqlfjsdkjfkls";
   var order_id = "20150427123456";
+  var datas = [user_id, order_id];
+
+  if(datas){
+    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+  } else {
+    res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+  }
 });
 
 
