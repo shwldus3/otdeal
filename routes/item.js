@@ -7,19 +7,19 @@ var router = express.Router();
 url : /item
  */
 router.get('/', function(req, res, next) {
-	var item_id = "2";
+	var item_id = 2;
 	var output_single = {
-		"item_id" : "1",
+		"item_id" : 1,
 		"item_name" : "원피스단일상품",
-		"gr_gubun" : "0",//단일상품
-		"item_color_id" : "1",
+		"gr_gubun" : 0,//단일상품
+		"item_color_id" : 1,
 		"item_color" : "검정",
 		"item_content" : "상품내용입니다",
-		"item_cnt" : "30",
-		"item_price" : "30000",
-		"item_saleprice" : "15000",
+		"item_cnt" : 30,
+		"item_price" : 30000,
+		"item_saleprice" : 15000,
 		"item_sale" : "50%",
-		"item_size_id" : "1",
+		"item_size_id" : 1,
 		"item_size" : "S",
 		"imageArr" : [{
 			"img_seq" : "1",
