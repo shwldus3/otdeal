@@ -6,7 +6,40 @@ var router = express.Router();
  전송방식 : post
  url : /mypage
  */
+router.post('/', function(req, res, next){
+  console.log('req.body', req.body);
+  //var title = req.body.title;
+  //var content = req.body.content;
+  //var	num = req.body.num;
+  //var	passwd = req.body.passwd;
+  //var datas = [title, content, num, passwd];
 
+  var user_id = req.session.user_id;
+  var styArr = [
+    {
+      sty_cd: req.body.sty_cd,
+      sty_name: req.body.sty_name,
+      sty_gubun: req.body.sty_gubun
+    }
+  ];
+
+  var size_name = req.body.size_name;
+  var user_age = req.body.user_age;
+  var user_gender = req.body.user_gender;
+  var nickname = req.body.nickname;
+
+  var dataArr = [user_id, styArr, size_name, user_age, user_gender, nickname];
+
+  db_mypage.update(dataArr, function(output) {
+    if(output){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
+  });
+});
+
+/*
 router.post('/', function(req, res, next) {
   var user_id = "qwerty";
 
@@ -41,7 +74,7 @@ router.post('/', function(req, res, next) {
     res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
   }
 });
-
+*/
 
 /*
  업무명 : 장바구니 상세보기
