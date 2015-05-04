@@ -6,6 +6,7 @@ var router = express.Router();
  전송방식 : post
  url : /mypage
  */
+
 router.post('/', function(req, res, next) {
   var user_id = "qwerty";
 
