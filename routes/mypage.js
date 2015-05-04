@@ -52,15 +52,15 @@ router.get('/basket', function(req, res, next) {
 
   var outputs = [
     {
-    "item_name" : "흰셔츠",
-    "size_name" : "FREE",
-    "bsk_id" : 2015042701234,
-    "bsk_cnt" : 1,
-    "color_name" : "white",
-    "item_price" : 45000,
-    "total_price" : 45000,
-    "bsk_regdate" : "2015-04-27",
-    "bsk_regtime" : "2015-04-27 14:19:00"
+      "item_name" : "흰셔츠",
+      "size_name" : "FREE",
+      "bsk_id" : 2015042701234,
+      "bsk_cnt" : 1,
+      "color_name" : "white",
+      "item_price" : 45000,
+      "total_price" : 45000,
+      "bsk_regdate" : "2015-04-27",
+      "bsk_regtime" : "2015-04-27 14:19:00"
     },
     {
       "item_name" : "노랑셔츠",
@@ -129,14 +129,14 @@ router.get('/order', function(req, res, next) {
 
   var output = [
     {
-    "order_id" : "20150427123456",
-    "total_price" : 45000,
-    "item_name" : "흰셔츠",
-    "order_cnt" : 1,
-    "order_paystat" : "미결제",
-    "order_regdate" : "2015-04-27",
-    "order_regtime" : "2015-04-27 14:39:00",
-    "dlvr_stat" : 1
+      "order_id" : "20150427123456",
+      "total_price" : 45000,
+      "item_name" : "흰셔츠",
+      "order_cnt" : 1,
+      "order_paystat" : "미결제",
+      "order_regdate" : "2015-04-27",
+      "order_regtime" : "2015-04-27 14:39:00",
+      "dlvr_stat" : 1
     },
     {
       "order_id" : "20150425234567",
