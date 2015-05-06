@@ -69,8 +69,7 @@ router.get('/version', function(req, res, next) {
   var os_gubun = "A";
 
   var result = {
-    "version_now" : "1.1.1",
-    "os_gubun" : "A"
+    "version_now" : "1.1.1"
   };
   db_setting.version(function(os_gubun, result){
     if(result){

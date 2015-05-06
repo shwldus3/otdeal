@@ -9,7 +9,7 @@ exports.fblogin = function(dataArr, done){
   pool.getConnection(function (err, conn) {
     if(err) console.log('err', err);
 
-    var sql = "insert into TBUSR (user_id, token) values(?,?)";
+    var sql = "insert into TBUSR (user_id, name, token, user_regdate) values(?,?,?, now())";
     conn.query(sql, dataArr, function(err, row) {
       if (err) console.log('err', err);
       var success = false;

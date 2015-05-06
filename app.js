@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var compression = require('compression');
-var express = require('express');
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -29,6 +29,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(compression());
+
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}));
 
 app.use('/', routes);
 app.use('/users', users);
