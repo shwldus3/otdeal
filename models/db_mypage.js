@@ -5,11 +5,11 @@ var mysql = require('mysql');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
 
-exports.update = function(dataArr, callback){
+exports.update = function(dataobj, callback){
   pool.getConnection(function(err, conn){
     if(err) console.error('err', err);
     var sql = "update board set title=?, content=? where num=? and passwd=?";
-    conn.query(sql, datas, function(err, row){
+    conn.query(sql, dataobj, function(err, row){
       if(err) console.error('err', err);
       var output = false;
       if(row.affectedRows == 1){
@@ -24,7 +24,12 @@ exports.update = function(dataArr, callback){
 exports.bsklist = function(user_id, callback){
   pool.getConnection(function(err, conn){
     if(err) console.log('err', err);
-    var sql = "select 0000 from 0000 where 0000 and user_id=?"; // 쿼리문 작성해라 성원아!!!>0<
+    var sql = "select TBBSK.user_id, TBBSK.bsk_id, TBSZ.size_name, TBITM.color_name, TBBSK.bsk_cnt, TBBSK.bsk_regdate, TBBSK.bsk_regtime"
+            + "from TBBSK, TBSZ, TBITM"
+            + "where TBBSK.item_id = TBITM.item_id"
+            + "and TBITM.size_id = TBSZ.size_id"
+            + "and TBBSK.user_id = ?";
+
     conn.query(sql, user_id, function(err, rows){
       if(err) console.error('err', err);
       console.log('rows', rows);
@@ -67,7 +72,6 @@ exports.orderlist = function(dataArr, callback){
     });
   });
 };
-
 
 exports.delete = function(dataArr, callback){
   pool.getConnection(function(err, conn){
