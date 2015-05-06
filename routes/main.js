@@ -11,11 +11,11 @@ router.post('/style', function(req, res, next) {
 	var stA_name = "";
 	var stB_name = "";
 	var stC_name = "";
-	var output = {"user_id": "Q24S14"};
-	if(output){
-		res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+	var result = {"user_id": "Q24S14"};
+	if(result){
+		res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 
 });
@@ -28,7 +28,7 @@ url : /main/recmd/item
  */
 router.get('/recmd/item', function(req, res, next) {
 	var user_id = "";
-	var output = {
+	var result = {
 		"itemArr" : [{
 			"item_seq" : 1,
 			"item_id" : 1,
@@ -85,10 +85,10 @@ router.get('/recmd/item', function(req, res, next) {
 			}
 		}]
 	};
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+	if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 });
 
@@ -100,7 +100,7 @@ url : /main/recmd/oneforyou
  */
 router.get('/recmd/oneforyou', function(req, res, next) {
 	var user_id = "";
-	var output = {
+	var result = {
 		"itemArr" : [{
 			"item_seq" : 1,
 			"item_id" : 1,
@@ -157,10 +157,10 @@ router.get('/recmd/oneforyou', function(req, res, next) {
 			}
 		}]
 	};
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+	if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 });
 
@@ -172,7 +172,7 @@ url : /main/recmd/like
  */
 router.get('/recmd/like', function(req, res, next) {
 	var user_id = "";
-	var output = {
+	var result = {
 		"itemArr" : [{
 			"item_seq" : 1,
 			"item_id" : 1,
@@ -229,10 +229,10 @@ router.get('/recmd/like', function(req, res, next) {
 			}
 		}]
 	};
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+	if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 });
 
@@ -245,7 +245,7 @@ url : /main/category
 router.get('/category', function(req, res, next) {
 	var user_id = "";
 	var sort_gubun = "";
-	var output = {
+	var result = {
 		"itemArr" : [{
 			"item_seq" : 1,
 			"item_id" : 1,
@@ -302,10 +302,10 @@ router.get('/category', function(req, res, next) {
 			}
 		}]
 	};
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+	if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 });
 
@@ -318,7 +318,7 @@ url : /main/recent
 router.get('/recent', function(req, res, next) {
 	var user_id = "";
 	var sort_gubun = "";
-	var output = {
+	var result = {
 		"itemArr" : [{
 			"item_seq" : 1,
 			"item_id" : 1,
@@ -375,10 +375,10 @@ router.get('/recent', function(req, res, next) {
 			}
 		}]
 	};
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
+	if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
+		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 });
 
@@ -389,8 +389,8 @@ router.get('/recent', function(req, res, next) {
 url : /main/qna
  */
 router.get('/qna', function(req, res, next) {
-	var item_id = "";
-		var output = {
+	/*
+	var output = {
 		"qnaArr" : [{
 			"qna_seq" : 1,
 			"qna_id" : 1,
@@ -423,11 +423,17 @@ router.get('/qna', function(req, res, next) {
 			"qna_regtime" : ""
 		}]
 	};
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:output });
-	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다." });
-	}
+	*/
+	var item_id = parseInt(item_id, 10);
+	console.log('item_id : ', item_id);
+	db_main.qnalist(item_id, function(result){
+		console.log('result', result);
+		if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 });
 
 
@@ -437,17 +443,22 @@ router.get('/qna', function(req, res, next) {
 url : /main/qna
  */
 router.post('/qna', function(req, res, next) {
-	var user_id = "";
+	var shop_id = "";
 	var item_id = "";
+	var user_id = "";
+	var qna_parentid = "";
 	var qna_title = "";
 	var qna_content = "";
-	var qna_parentid = "";
-	var output = "ok";
-	if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:"success" });
-	}else{
-		res.json({ success:"0", msg:"수행도중 에러가 발생했습니다.", result:"false" });
-	}
+	var qna_gubun = "1";//1:정상, 0:비밀글
+	// var output = "ok";
+	var input_arr = [shop_id, item_id, user_id,qna_parentid, qna_title, qna_content, qna_gubun];
+	db_main.qnaInsert(input_arr, function(result){
+		if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:"success" });
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result:"false" });
+		}
+	});
 });
 
 
@@ -459,15 +470,15 @@ url : /main/like
 router.post('/like', function(req, res, next) {
 	var user_id = "";
 	var item_id = "";
-	var output = "ok";
+	// var result = "ok";
 	var input_arr = [user_id, item_id];
-	// db_board.like(input_arr, function(output){
-		if(output){
-			res.json({ success:"1", msg:"성공적으로 수행되었습니다.", result:"success" });
+	db_main.like(input_arr, function(result){
+		if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:"success" });
 		}else{
-			res.json({ success:"0", msg:"수행도중 에러가 발생했습니다.", result:"false" });
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result:"false" });
 		}
-	// });
+	});
 });
 
 

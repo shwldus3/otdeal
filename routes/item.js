@@ -8,6 +8,17 @@ url : /item
  */
 router.get('/', function(req, res, next) {
 	var item_id = "2";
+	db_item.itemDetail(item_id, function(err, result){
+		if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
+});
+/*
+router.get('/', function(req, res, next) {
+	var item_id = "2";
 	var output_single = {
 		"item_id" : 1,
 		"item_name" : "원피스단일상품",
@@ -143,6 +154,7 @@ router.get('/', function(req, res, next) {
 		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}
 });
+*/
 
 
 /*
@@ -155,14 +167,14 @@ router.post('/bsk', function(req, res, next) {
 	var item_id = "";
 	var bsk_cnt = "";
 	var output = { "bsk_id": "1" };
-	// var input_arr = [user_id, item_id, bak_cnt];
-	// db_item.bsk(input_arr, function(output){
-		if(output){
-			res.json({ success: 1, msg:"성공적으로 수행되었습니다.", result:output });
+	var input_arr = [user_id, item_id, bak_cnt];
+	db_item.bsk(input_arr, function(result){
+		if(result){
+			res.json({ success: 1, msg:"성공적으로 수행되었습니다." });
 		}else{
 			res.json({ success: 0, msg:"수행도중 에러가 발생했습니다." });
 		}
-	// });
+	});
 });
 
 
@@ -180,7 +192,7 @@ router.post('/order', function(req, res, next) {
 	var order_paypoint = "";
 	var total_price = "";
 	var order_paystat = "";
-	var output = {
+	var result = {
 		"order_id" : "20150501574571",
 		"itemArr" : [{
 			"item_id" : 4,
@@ -195,8 +207,8 @@ router.post('/order', function(req, res, next) {
 		}],
 		"total_price" : 90000,
 	};
-	if(output){
-			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:output });
+	if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 	}else{
 		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 	}

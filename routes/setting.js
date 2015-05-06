@@ -10,13 +10,14 @@ router.post('/push', function(req, res, next) {
 
   var user_id = "qwerty";
   var ps_usecheck = "0";
-  var datas = [user_id, ps_usecheck];
-
-  if(datas){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
-  } else {
-    res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-  }
+  var datas = [ps_usecheck, user_id];
+  db_setting.push(datas, function(result){
+    if(result){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
+  });
 });
 
 
@@ -26,7 +27,7 @@ router.post('/push', function(req, res, next) {
  url : /setting/notice
  */
 router.get('/notice', function(req, res, next) {
-  var output = [
+  var result = [
     {
       "ntc_id" : 1,
       "admin_id" : "aaa",
@@ -48,12 +49,13 @@ router.get('/notice', function(req, res, next) {
       "ntc_regtime" : "2015-04-27 16:30:00"
     }
   ];
-
-  if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output});
-  } else {
-    res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-  }
+  db_setting.notice(function(result){
+    if(result){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : result});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
+  });
 });
 
 
@@ -66,15 +68,18 @@ router.get('/version', function(req, res, next) {
 
   var os_gubun = "A";
 
-  var output = {
+  var result = {
     "version_now" : "1.1.1",
     "os_gubun" : "A"
   };
-
-  if(output){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : output});
-  } else {
-    res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-  }
+  db_setting.version(function(os_gubun, result){
+    if(result){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : result});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
+  });
 });
+
+
 module.exports = router;
