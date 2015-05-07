@@ -4,6 +4,8 @@
 var mysql = require('mysql');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
+var async = require('async');
+var forEach = require('async-foreach').forEach;
 
 exports.update = function(dataobj, callback){
   pool.getConnection(function(err, conn){
@@ -24,11 +26,7 @@ exports.update = function(dataobj, callback){
 exports.bsklist = function(user_id, callback){
   pool.getConnection(function(err, conn){
     if(err) console.log('err', err);
-    var sql = "select TBBSK.user_id, TBBSK.bsk_id, TBSZ.size_name, TBITM.color_name, TBBSK.bsk_cnt, TBBSK.bsk_regdate, TBBSK.bsk_regtime"
-            + "from TBBSK, TBSZ, TBITM"
-            + "where TBBSK.item_id = TBITM.item_id"
-            + "and TBITM.size_id = TBSZ.size_id"
-            + "and TBBSK.user_id = ?";
+    var sql = "select bsk.item_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name from TBBSK bsk ,TBITM itm, TBSZ sz where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id;";
 
     conn.query(sql, user_id, function(err, rows){
       if(err) console.error('err', err);
@@ -59,12 +57,11 @@ exports.bskupdate = function(dataArr, done){
   });
 };
 
-exports.orderlist = function(dataArr, callback){
+exports.orderlist = function(user_id, callback){
   pool.getConnection(function(err, conn){
     if(err) console.error('err', err);
-
-    var sql = "select TBODR.order_id, TBODR.total_price , TBITM.item_name, TBODR.order_cnt, TBODR.order_paystat, TBODR.order_regdate, TBODR.order_regtime, TBDLVR.dlvr_stat from TBODR, TBITM, TBDLVR where TBODR.order_id=TBDLVR.order_id and TBITM.item_id=TBODR.item_id and user_id=? and order_id=?";
-    conn.query(sql, dataArr, function(err,rows){
+    var sql = "select dlvr.dlvr_stat, itm.item_id, itm.item_name, itm.color_name, sz.size_name, odr.order_id, odr.order_cnt, odr.total_price, odr.order_paystat, odr.order_regdate, odr.order_regtime from TBITM itm, TBSZ sz, TBODR odr, TBDLVR dlvr, (select * from TBODRITM odritm where odritm.order_id in (select order_id from TBODR where user_id = ?) ) a where itm.item_id = a.item_id and itm.size_id = sz.size_id and a.order_id = odr.order_id and dlvr.order_id = a.order_id";
+    conn.query(sql, user_id, function(err, rows){
       if(err) console.error('err', err);
       console.log('rows', rows);
       conn.release();
@@ -72,6 +69,7 @@ exports.orderlist = function(dataArr, callback){
     });
   });
 };
+
 
 exports.delete = function(dataArr, callback){
   pool.getConnection(function(err, conn){

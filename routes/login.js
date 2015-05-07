@@ -49,7 +49,7 @@ router.post('/facebook', function(req, res, next) {
     ],
     function(err, result){
       if(err) console.error('err', err);
-      console.log('result', result); // results [ 'one', 'two' ]
+      console.log('result', result);
 
       var dataArr = [user_id, name, access_token];
       console.log('dataArr', dataArr);

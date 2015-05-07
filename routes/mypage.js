@@ -45,7 +45,8 @@ router.post('/', function(req, res, next){
  */
 router.get('/basket', function(req, res, next) {
 
-  var user_id = req.session.user_id;
+  var user_id = 'qwerty';
+  //var user_id = req.session.user_id;
 
   db_mypage.bsklist(user_id, function(lists){
     if(lists){
@@ -63,14 +64,17 @@ router.get('/basket', function(req, res, next) {
  url : /mypage/basket
  */
 router.post('/basket', function(req, res, next) {
-  var user_id = "qwerty";
-  var bsk_id = 2015042756414;
 
-  var size_name = "55(S)";
-  var color_name = "blue";
-  var bsk_cnt = 3;
-  var bsk_regdate = "2015-04-27";
-  var bsk_regtime = "2015-04-27 15:20:00";
+  //var user_id = req.session.user_id;
+
+  var bsk_id = req.body.bsk_id;
+  var size_name = req.body.size_name;
+  var color_name = req.body.color_name;
+  var bsk_cnt = req.body.bsk_cnt;
+  var bsk_regdate = req.body.bsk_regdate;
+  var bsk_regtime = req.body.bsk_regtime;
+
+  var user_id = "qwerty";
 
   var dataArr = [user_id, bsk_id, size_name, color_name, bsk_cnt, bsk_regdate, bsk_regtime];
 
@@ -91,16 +95,19 @@ router.post('/basket', function(req, res, next) {
  */
 router.get('/order', function(req, res, next) {
 
-  var user_id = req.session.user_id;
-  var order_id = "20150427123456";
-  var dataArr = [user_id, order_id];
+  var user_id = 'qwerty';
+  //var user_id = req.session.user_id;
+  // var order_id = "20150507222222";
+  // var dataArr = [user_id, order_id];
 
-  db_mypage.orderlist(dataArr, function(lists){
+  db_mypage.orderlist(user_id, function(lists){
+
     if(lists){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
     } else {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
     }
+
   });
 });
 

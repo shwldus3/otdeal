@@ -38,13 +38,12 @@ exports.push = function(datas, callback){
 exports.notice = function(callback){
 	pool.getConnection(function(err, conn){
 		if(err) console.err('err', err);
-		var sql = "select ntc_id, admin_id, ntc_title, ntc_content, ntc_stat, ntc_regdate, ntc_regtime from TBNTC";
+		var sql = "select ntc.ntc_id, ntc.admin_id, adm.admin_name, ntc.ntc_title, ntc.ntc_content, ntc.ntc_stat, ntc.ntc_regdate, ntc.ntc_regtime from TBNTC ntc, TBADM adm where ntc.admin_id = adm.admin_id";
 		conn.query(sql, function(err, rows){
 			if(err) console.error('err', err);
 			console.log('rows', rows);
 			conn.release();
-			var result = {ntcArr : rows};
-			callback(result);
+			callback(rows);
 		});
 	});
 };
