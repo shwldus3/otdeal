@@ -77,7 +77,7 @@ app.use(function(err, req, res, next) {
 
 
 var http = require('http');
-app.set('port', 8080);
+app.set('port', 3000);
 var server = http.createServer(app);
 server.listen(app.get('port'));
 console.log('서버가 '+app.get('port') + '번 포트에서 실행중입니다.');
