@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db_mypage = require('../models/db_mypage');
+var async = require('async');
 /*
  업무명 : 회원정보 수정하기
  전송방식 : post
@@ -103,6 +104,18 @@ router.get('/order', function(req, res, next) {
   db_mypage.orderlist(user_id, function(lists){
 
     if(lists){
+      console.log('lists', lists);
+
+      var odrArr = [lists.order_id, lists.order_cnt, lists.total_price, lists.order_paystat, lists.dlvr_stat, lists.order_regdate, lists.order_regtime];
+
+      // async.each(lists, function(list, callback){
+      //   var singleItemArr = [list.item_name, list.color_name, list.size_name];
+
+      //   // console.log('singleItemArr',singleItemArr);
+      //   // console.log('odrArr', odrArr);
+
+      // });
+
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
     } else {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});

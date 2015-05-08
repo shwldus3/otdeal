@@ -57,10 +57,33 @@ exports.bskupdate = function(dataArr, done){
   });
 };
 
+// // user_id에 해당하는 order_id 받아오기
+// select odritm.item_id, odritm.order_id
+// from TBODRITM odritm
+// where odritm.order_id in (select order_id from TBODR where user_id = 'qwerty')
+
+// // order_id에 해당하는 아이템 정보 받아오기
+// select itm.item_name, itm.color_name, sz.size_name, odr.total_price, odr.order_paystat, dlvr.dlvr_stat, odr.order_regdate, odr.order_regtime
+// from TBITM itm, TBSZ sz, TBODR odr, TBDLVR dlvr,
+//     (select *
+//     from TBODRITM odritm
+//     where odritm.order_id = '20150507333333') a
+// where itm.item_id = a.item_id
+// and itm.size_id = sz.size_id
+// and a.order_id = odr.order_id
+// and dlvr.order_id = a.order_id
+
+// var sql2 = "select itm.item_name, itm.color_name, sz.size_name, odr.total_price, odr.order_paystat, dlvr.dlvr_stat, odr.order_regdate, odr.order_regtime from TBITM itm, TBSZ sz, TBODR odr, TBDLVR dlvr, (select * from TBODRITM odritm where odritm.order_id = ?) a where itm.item_id = a.item_id and itm.size_id = sz.size_id and a.order_id = odr.order_id and dlvr.order_id = a.order_id"
+// conn.query(sql2, rows, function(err, rows){
+//   if(err) console.error('err', err);
+//   console.log('sql2 rows', rows);
+
+// });
+
 exports.orderlist = function(user_id, callback){
   pool.getConnection(function(err, conn){
     if(err) console.error('err', err);
-    var sql = "select dlvr.dlvr_stat, itm.item_id, itm.item_name, itm.color_name, sz.size_name, odr.order_id, odr.order_cnt, odr.total_price, odr.order_paystat, odr.order_regdate, odr.order_regtime from TBITM itm, TBSZ sz, TBODR odr, TBDLVR dlvr, (select * from TBODRITM odritm where odritm.order_id in (select order_id from TBODR where user_id = ?) ) a where itm.item_id = a.item_id and itm.size_id = sz.size_id and a.order_id = odr.order_id and dlvr.order_id = a.order_id";
+    var sql = "select odritm.item_id, odritm.order_id from TBODRITM odritm where odritm.order_id in (select order_id from TBODR where user_id = ?)";
     conn.query(sql, user_id, function(err, rows){
       if(err) console.error('err', err);
       console.log('rows', rows);
