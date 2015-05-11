@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db_mypage = require('../models/db_mypage');
 var async = require('async');
+
 /*
  업무명 : 회원정보 수정하기
  전송방식 : post
@@ -15,21 +16,15 @@ router.post('/', function(req, res, next){
   //var	passwd = req.body.passwd;
   //var datas = [title, content, num, passwd];
 
-  var dataobj =   // 어려워어려워 때려쳐
-    {
-      user_id : req.session.user_id,
-      size_name : req.body.size_name,
-      user_age : req.body.user_age,
-      user_gender : req.body.user_gender,
-      nickname : req.body.nickname,
-      styArr : [{
-        sty_cd: req.body.sty_cd,
-        sty_name: req.body.sty_name,
-        sty_gubun: req.body.sty_gubun
-      }]
-    };
+  var user_id = req.session.user_id;
+  var size_id = req.body.size_name;
+  var user_age = req.body.user_age;
+  var user_gender = req.body.user_gender;
+  var nickname = req.body.nickname;
 
-  db_mypage.update(dataobj, function(output) {
+  var dataArr = [size_id, user_age, user_gender, nickname, user_id];
+
+  db_mypage.update(dataArr, function(output) {
     if(output){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
     } else {
@@ -68,24 +63,52 @@ router.post('/basket', function(req, res, next) {
 
   //var user_id = req.session.user_id;
 
-  var bsk_id = req.body.bsk_id;
-  var size_name = req.body.size_name;
-  var color_name = req.body.color_name;
-  var bsk_cnt = req.body.bsk_cnt;
-  var bsk_regdate = req.body.bsk_regdate;
-  var bsk_regtime = req.body.bsk_regtime;
-
   var user_id = "qwerty";
+  var bsk_cnt = req.body.bsk_cnt;
+  var color_name = req.body.color_name;
+  var size_id = req.body.size_id;
+  var item_id= req.body.item_id;
+  var bsk_id = req.body.bsk_id;
 
-  var dataArr = [user_id, bsk_id, size_name, color_name, bsk_cnt, bsk_regdate, bsk_regtime];
+  var dataArr = [item_id, color_name, size_id, user_id, bsk_cnt, bsk_id];
+  // console.log('dataArr', dataArr);
 
-  db_mypage.bskupdate(dataArr, function(success) {
-    if(success){
+  db_mypage.bskupdate(dataArr, function(row) {
+    if(row){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
     } else {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
     }
   });
+
+  // async.waterfall([
+  //   function(callback){
+  //     db_mypage.bskupdate(dataArr, function(row) {
+  //       if(row){
+  //         var item_id = row;
+  //         var dataArr2 = [bsk_cnt, item_id, user_id, bsk_id];
+  //         callback(null, dataArr2);
+  //       } else {
+  //         res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+  //       }
+  //     });
+  //   },
+  //   function(dataArr2, callback){
+  //     db_mypage.bskupdate2(dataArr2, function(success) {
+  //       if(success){
+  //         res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+  //       } else {
+  //         res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+  //       }
+  //     });
+  //   }
+  // ],
+  //   function(err, result){
+  //     if(err) console.error('err', err);
+  //     console.log('result', result);
+
+  //   }
+  // );
 });
 
 

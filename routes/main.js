@@ -8,7 +8,6 @@ var db_main = require('../models/db_main');
 url : /main/curation
  */
 router.get('/curation', function(req, res, next){
-
 	var uuid = '12341234';
 	var images1 = [
 		{
