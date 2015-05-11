@@ -80,32 +80,32 @@ exports.bskupdate = function(dataArr, done){
 
 // });
 
-exports.orderlist = function(user_id, callback){
-  pool.getConnection(function(err, conn){
-    if(err) console.error('err', err);
-    var sql = "select odritm.item_id, odritm.order_id from TBODRITM odritm where odritm.order_id in (select order_id from TBODR where user_id = ?)";
-    conn.query(sql, user_id, function(err, rows){
-      if(err) console.error('err', err);
-      console.log('rows', rows);
-      conn.release();
-      callback(rows);
-    });
-  });
-};
+// exports.orderlist = function(user_id, callback){
+//   pool.getConnection(function(err, conn){
+//     if(err) console.error('err', err);
+//     var sql = "select odritm.item_id, odritm.order_id from TBODRITM odritm where odritm.order_id in (select order_id from TBODR where user_id = ?)";
+//     conn.query(sql, user_id, function(err, rows){
+//       if(err) console.error('err', err);
+//       console.log('rows', rows);
+//       conn.release();
+//       callback(rows);
+//     });
+//   });
+// };
 
 
-exports.delete = function(dataArr, callback){
-  pool.getConnection(function(err, conn){
-    if(err) console.error('err', err);
-    var sql = "delete from TBODR where user_id=? and order_id=?";
-    conn.query(sql, dataArr, function(err, row){
-      if(err) console.error('err', err);
-      var success = false;
-      if(row.affectedRows == 1){
-        success = true;
-      }
-      conn.release();
-      callback(success);
-    });
-  });
-};
+// exports.delete = function(dataArr, callback){
+//   pool.getConnection(function(err, conn){
+//     if(err) console.error('err', err);
+//     var sql = "delete from TBODR where user_id=? and order_id=?";
+//     conn.query(sql, dataArr, function(err, row){
+//       if(err) console.error('err', err);
+//       var success = false;
+//       if(row.affectedRows == 1){
+//         success = true;
+//       }
+//       conn.release();
+//       callback(success);
+//     });
+//   });
+// };

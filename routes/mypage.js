@@ -94,56 +94,46 @@ router.post('/basket', function(req, res, next) {
  전송방식 : get
  url : /mypage/order
  */
-router.get('/order', function(req, res, next) {
+// router.get('/order', function(req, res, next) {
 
-  var user_id = 'qwerty';
-  //var user_id = req.session.user_id;
-  // var order_id = "20150507222222";
-  // var dataArr = [user_id, order_id];
+//   var user_id = 'qwerty';
+//   //var user_id = req.session.user_id;
+//   // var order_id = "20150507222222";
+//   // var dataArr = [user_id, order_id];
 
-  db_mypage.orderlist(user_id, function(lists){
+//   db_mypage.orderlist(user_id, function(lists){
 
-    if(lists){
-      console.log('lists', lists);
+//     if(lists){
+//       console.log('lists', lists);
 
-      var odrArr = [lists.order_id, lists.order_cnt, lists.total_price, lists.order_paystat, lists.dlvr_stat, lists.order_regdate, lists.order_regtime];
+//       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
+//     } else {
+//       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+//     }
 
-      // async.each(lists, function(list, callback){
-      //   var singleItemArr = [list.item_name, list.color_name, list.size_name];
-
-      //   // console.log('singleItemArr',singleItemArr);
-      //   // console.log('odrArr', odrArr);
-
-      // });
-
-      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
-    } else {
-      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-    }
-
-  });
-});
+//   });
+// });
 
 
 
-/*
- 업무명 : 주문배송취소
- 전송방식 : post
- url : /mypage/order/delete
- */
-router.post('/order/delete', function(req, res, next) {
-  var user_id = req.session.user_id;
-  var order_id = "20150427123456";
 
-  var dataArr = [user_id, order_id];
+//  업무명 : 주문배송취소
+//  전송방식 : post
+//  url : /mypage/order/delete
 
-  db_mypage.delete(dataArr, function(success){
-    if(success){
-      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
-    } else {
-      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-    }
-  });
-});
+// router.post('/order/delete', function(req, res, next) {
+//   var user_id = req.session.user_id;
+//   var order_id = "20150427123456";
+
+//   var dataArr = [user_id, order_id];
+
+//   db_mypage.delete(dataArr, function(success){
+//     if(success){
+//       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+//     } else {
+//       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+//     }
+//   });
+// });
 
 module.exports = router;
