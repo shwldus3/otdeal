@@ -46,11 +46,8 @@ router.get('/notice', function(req, res, next) {
  */
 router.get('/version', function(req, res, next) {
 
-  var os_gubun = "A";
+  var os_gubun = req.body.os_gubun;
 
-  var result = {
-    "version_now" : "1.1.1"
-  };
   db_setting.version(function(os_gubun, result){
     if(result){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : result});

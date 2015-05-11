@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
-var db = require('../models/mongodb');
+var db = require('../models/db_config_mongo');
+
 var autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(db);
 
@@ -16,7 +17,8 @@ ClickSchema.virtual('myregdate').get(function(){
 });
 ClickSchema.set('toJSON', { virtuals : true });
 
-ClickSchema.plugin(autoIncrement.plugin, { model: 'Click', field: 'click_id', startAt : 1, incrementBy : 1 });
+ClickSchema.plugin(autoIncrement.plugin, { model: 'Click', field: 'click_id', startAt : 0, incrementBy : 1 });
+
 var Click = db.model('Click', ClickSchema);
 
 function formatDate(date){
@@ -29,4 +31,4 @@ function formatDate(date){
 	// YYYY-MM-DD hh:mm:ss
 	var fmdate = year + '-' + (month>9?month:'0'+month) + '-' + (day>9?day:'0'+day) + ' ' + (hour>9?hour:'0'+hour) + ':' + (minutes>9?minutes:'0'+minutes) + ':' + (second>9?second:'0'+second);
 	return fmdate;
-};
+}
