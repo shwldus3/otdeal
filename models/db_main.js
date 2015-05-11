@@ -6,6 +6,7 @@ var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
 
+
 exports.cuList = function(callback){
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
@@ -20,7 +21,7 @@ exports.cuList = function(callback){
 };
 
 /**
- * 업무명 : 좋아요
+ * 업무명 : 좋아요 등록
  * @param  {[array]}   datas	[inputData : user_id, item_id]
  * @param  {Function} callback
  * @return {[boolean]}			[성공여부]
