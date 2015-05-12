@@ -58,7 +58,7 @@ exports.notice = function(callback){
 exports.version = function(data, callback){
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
-		var sql = "select version, os_gubun from TBVS where os_gubun=? and vs_check='Y'";
+		var sql = "select version from TBVS where os_gubun=? and vs_check='Y'";
 		conn.query(sql, data, function(err, rows){
 			if(err) console.error('err', err);
 			console.log('rows', rows[0]);
