@@ -5,7 +5,7 @@ var mysql = require('mysql');
 var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
-
+var async = require('async');
 
 exports.cuList = function(callback){
 	pool.getConnection(function(err, conn){
@@ -40,6 +40,41 @@ exports.like = function(datas, callback){
 			conn.release();
 			callback(success);
 		});
+	});
+};
+
+
+/**
+ * 업무명 : 최근 본 상품
+ * @param  {[array]}   dataArr [inputData : user_id]
+ * @param  {Function} callback [description]
+ * @return {[object]}          [아이템썸네일배열]
+ */
+exports.recentList = function(dataArr, callback){
+	console.log('dataArr', dataArr);
+	pool.getConnection(function(err, conn){
+		if(err) console.error('err', err);
+		var itmArr = [];
+		async.each(dataArr, function(item_id, callback){
+			console.log('item_id', item_id);
+			var sql = "select item_id, path, img_name from TBIMG where item_id=? and img_thumbnail='Y'";
+			conn.query(sql, item_id, function(err, row){
+				if(err) console.error('err', err);
+				console.log('row', row);
+				if(row[0]) {
+					itmArr.push(row[0]);
+				}
+				console.log('itmArr', itmArr);
+				callback(null, itmArr);
+			});
+		}, function(err){
+			if(itmArr){
+				callback(itmArr);
+			} else {
+				callback(false);
+			}
+		});
+		conn.release();
 	});
 };
 

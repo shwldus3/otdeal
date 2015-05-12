@@ -12,9 +12,9 @@ var ClickSchema = new mongoose.Schema({
 
 
 // 몽고디비에서 날짜형식 바꾸기 위한 소스
-ClickSchema.virtual('myregdate').get(function(){
-	return formatDate(this.regdate);
-});
+// ClickSchema.virtual('myregdate').get(function(){
+// 	return formatDate(this.regdate);
+// });
 ClickSchema.set('toJSON', { virtuals : true });
 
 ClickSchema.plugin(autoIncrement.plugin, { model: 'Click', field: 'click_id', startAt : 0, incrementBy : 1 });
