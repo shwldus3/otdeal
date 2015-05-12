@@ -46,7 +46,7 @@ router.post('/', function(req, res, next) {
 	var item_id = req.body.item_id;
 	logger.debug(item_id);
 	db_item.itemDetail(item_id, function(err, outputData){
-		logger.debug(outputData);
+		// logger.debug(outputData);
 		if(outputData){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:outputData });
 		}else{

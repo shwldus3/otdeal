@@ -4,9 +4,14 @@
 var mysql = require('mysql');
 var async = require('async');
 var moment = require('moment');
+var path = require('path');
+
+var easyimage = require('easyimage');
 var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
+var db_utils = require('./db_utils.js');
+
 
 
 /**
@@ -40,23 +45,26 @@ exports.itemDetail = function(item_id, callback){
 				if (err) {
 					logger.error(err);
 				} else {
-					var outputData;
 					if(row[0].cnt === 1){
 					// 단일 상품인 경우
-						logger.debug('[상품정보] results[0] : ', results[0]);
+						// logger.debug('[상품정보] results[0] : ', results[0]);
 						logger.debug('[이미지정보] results[1] : ', results[1]);
+						var outputData = {};
 						outputData = results[0];
+						outputData.imageArr = [];
 						outputData.imageArr = results[1];
+						callback(null, outputData);
 					}else{
 					// 그룹 상품인 경우
-						logger.debug('[그룹상품정보] results[0][0] : ', results[0][0]);
-						logger.debug('[단일상품정보] results[0][1] : ', results[0][1]);
+						// logger.debug('[그룹상품정보] results[0][0] : ', results[0][0]);
+						// logger.debug('[단일상품정보] resu	lts[0][1] : ', results[0][1]);
 						logger.debug('[이미지정보] results[1] : ', results[1]);
+						var outputData = {};
 						outputData = results[0][0];
 						outputData.singleItemArr = results[0][1];
 						outputData.imageArr = results[1];
+						callback(null, outputData);
 					}
-					callback(null, outputData);
 				}
 			});
 		});
@@ -134,12 +142,16 @@ function getImgInfo(item_id, callback){
 	logger.debug(item_id);
 	pool.getConnection(function(err, conn){
 		if(err) logger.error('err', err);
-		var sql = "select img_id, img_idx as img_seq, img_name, path, img_width, img_height, img_thumbnail as thumbnail from TBIMG where item_id=?";
+		var sql = "select img_id, img_name, img_idx as img_seq, img_viewcd, path, img_thumbnail as thumbnail from TBIMG where item_id=?";
 		conn.query(sql, item_id, function(err, rows){
 			if(err) logger.error('err', err);
-			logger.debug(rows);
+			// logger.debug(rows);
 			conn.release();
-			callback(null, rows);
+
+			//이미지 width, height 가져오기
+			db_utils.getFileInfo(rows, function(err, imagerows){
+				callback(null, imagerows);
+			});
 		});
 	});
 }
