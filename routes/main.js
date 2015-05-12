@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 var db_main = require('../models/db_main');
 
+// 몽고디비 사용
+var db = require('../models/db_config_mongo');
+require('../models/clickmodel');
+var ClickModel = db.model('Click');
+
 /*
 업무명 : 초기 이미지 선택 리스트
 전송방식 : get
@@ -437,71 +442,29 @@ router.get('/category', function(req, res, next) {
 전송방식 : get
 url : /main/recent
  */
-router.get('/recent', function(req, res, next) {
-	var user_id = "";
-	var sort_gubun = "";
-	var result = {
-		"itemArr" : [{
-			"item_seq" : 1,
-			"item_id" : 1,
-			"item_name" : "원피스단일상품",
-			"item_price" : 30000,
-			"item_saleprice" : 15000,
-			"item_sale" : "50%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "4",
-				"path" : "/item/thumbnail",
-				"img_name" : "img4.jpg",
-				"img_width" : 300,
-				"img_height" : 400
+router.post('/recent', function(req, res, next) {
+	var user_id = req.body.user_id;
+
+	ClickModel.find({user_id:user_id},{item_id:1}).sort({regtime:-1}).limit(10).exec(function(err, docs){
+		if(err) console.error('err', err);
+		// console.log('docs', docs);
+		// console.log('JSON.stringify(docs)', JSON.stringify(docs));
+
+		var dataArr = [];
+
+		for(var i=0; i<docs.length; i++){
+			var item_id = docs[i].item_id;
+			dataArr.push(item_id);
+		}
+
+		db_main.recentList(dataArr, function(itmArr){
+			if(itmArr){
+						res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: itmArr});
+			}else{
+				res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 			}
-		}, {
-			"item_seq" : 2,
-			"item_id" : 2,
-			"item_name" : "바지그룹상품",
-			"item_price" : 55000,
-			"item_saleprice" : 45000,
-			"item_sale" : "19%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "N",
-			"imgObj" : {
-				"img_id" : "9",
-				"path" : "/item/thumbnail",
-				"img_name" : "img9.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 3,
-			"item_id" : 3,
-			"item_name" : "아우터",
-			"item_price" : 100000,
-			"item_saleprice" : 85000,
-			"item_sale" : "15%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "10",
-				"path" : "/item/thumbnail",
-				"img_name" : "img10.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}]
-	};
-	if(result){
-			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-	}else{
-		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-	}
+		});
+	});
 });
 
 
