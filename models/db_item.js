@@ -3,6 +3,7 @@
 
 var mysql = require('mysql');
 var async = require('async');
+var moment = require('moment');
 var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
@@ -165,4 +166,67 @@ exports.bsk = function(datas, callback){
 			callback(success);
 		});
 	});
+};
+
+
+/**
+ * 주문하기
+ * @param  {[object]}   datas    {itemArr, user_id, bsk_id, total_price}
+ * @param  {Function} callback
+ * @return {[object]}            {}
+ */
+exports.order = function(datas, callback){
+	var user_id = datas.user_id;
+	var total_price = datas.total_price;
+
+	//TBODR insert
+	var currentDate = moment().format('YYYYMMDD');
+	var random6 = Math.floor(Math.random() * 1000000);
+	var order_id = currentDate + random6;
+	var success1, success2;
+	logger.debug(order_id);
+
+	var inputarr1 = [order_id, user_id, total_price];
+	pool.getConnection(function(err, conn){
+		if(err) console.err('err', err);
+		var sql = "insert into TBODR (order_id, user_id, order_paystat, total_price, order_regdate, order_stat) values(?, ?, '0', ?, now(), '0')";
+		conn.query(sql, inputarr1, function(err, row){
+			if(err) logger.error('err', err);
+			logger.debug('row', row);
+			success1 = false;
+			if(row.affectedRows == 1){
+				success1 = true;
+			}
+			conn.release();
+		});
+	});
+
+	async.forEachSeries(datas.itemArr, function(item, callback){
+		logger.debug(item.item_id);
+		pool.getConnection(function(err, conn){
+			if(err) logger.error('err', err);
+			var inputarr2 = [order_id, item.item_id, item.item_cnt];
+			var sql = "insert into TBODRITM (order_id, item_id, item_cnt) values(?, ?, ?)";
+			conn.query(sql, inputarr2, function(err, row){
+				if(err) logger.error('err', err);
+				logger.debug('row', row);
+				success2 = false;
+				if(row.affectedRows == 1){
+					success2 = true;
+				}
+				conn.release();
+				callback(null);
+			});
+		});
+	}, function(err){
+		// each(for) 문장 처리 후 결과 처리과정
+		logger.debug(success1);
+		logger.debug(success2);
+		if(success1 && success2){
+			callback({"order_id" : order_id});
+		}else{
+			callback(false);
+		}
+	});
+
 };

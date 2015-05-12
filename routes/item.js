@@ -78,40 +78,41 @@ router.post('/bsk', function(req, res, next) {
 
 
 /*
-업무명 : 주문결제하기 (사용안함)
+업무명 : 주문하기
 전송방식 : post
 url : /item/order
  */
-// router.post('/order', function(req, res, next) {
-// 	var itemArr = req.body.itemArr;
-// 	var user_id = req.body.user_id;
-// 	var bsk_id = req.body.bsk_id;
-// 	var order_cnt = req.body.order_cnt;
-// 	var order_paycd = req.body.order_paycd;
-// 	var order_paypoint = req.body.order_paypoint;
-// 	var total_price = req.body.total_price;
-// 	var order_paystat = req.body.order_paystat;
-// 	var result = {
-// 		"order_id" : "20150501574571",
-// 		"itemArr" : [{
-// 			"item_id" : 4,
-// 			"item_name" : "바지1_S",
-// 			"item_cnt" : 1,
-// 			"item_price" : 30000,
-// 		},{
-// 			"item_id" : 6,
-// 			"item_name" : "바지2_S",
-// 			"item_cnt" : 2,
-// 			"item_price" : 60000,
-// 		}],
-// 		"total_price" : 90000,
-// 	};
-// 	if(result){
-// 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-// 	}else{
-// 		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-// 	}
-// });
+router.post('/order', function(req, res, next) {
+	var inputDummy = {
+		"user_id" : "qwerty",
+		"itemArr" : [{
+			"item_id" : 256,
+			"item_cnt" : 1
+		},{
+			"item_id" : 257,
+			"item_cnt" : 1
+		}],
+		"total_price" : 134500,
+	};
+	var itemArr = inputDummy.itemArr;
+	var user_id = inputDummy.user_id;
+	var total_price = inputDummy.total_price;
+	// var itemArr = req.body.itemArr;
+	// var user_id = req.body.user_id;
+	// var total_price = req.body.total_price;
+	logger.debug(itemArr);
+	logger.debug(user_id);
+	var datas = { 'itemArr' : itemArr, 'user_id' : user_id, 'total_price' : total_price };
+
+	db_item.order(datas, function(result){
+		logger.debug(result);
+		if(result){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
+});
 
 
 module.exports = router;
