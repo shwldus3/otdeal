@@ -47,7 +47,7 @@ exports.itemDetail = function(item_id, callback){
 					if(row[0].cnt === 1){
 					// 단일 상품인 경우
 						// logger.debug('[상품정보] results[0] : ', results[0]);
-						logger.debug('[이미지정보] results[1] : ', results[1]);
+						// logger.debug('[이미지정보] results[1] : ', results[1]);
 						var outputData = {};
 						outputData = results[0];
 						outputData.imageArr = [];
@@ -57,7 +57,7 @@ exports.itemDetail = function(item_id, callback){
 					// 그룹 상품인 경우
 						// logger.debug('[그룹상품정보] results[0][0] : ', results[0][0]);
 						// logger.debug('[단일상품정보] resu	lts[0][1] : ', results[0][1]);
-						logger.debug('[이미지정보] results[1] : ', results[1]);
+						// logger.debug('[이미지정보] results[1] : ', results[1]);
 						var outputData = {};
 						outputData = results[0][0];
 						outputData.singleItemArr = results[0][1];
