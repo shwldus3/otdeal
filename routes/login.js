@@ -10,26 +10,14 @@ var async = require('async');
 //console.log(obj.access_token);
 
 /*
- 업무명 : 페이스북에서 토큰으로 받은 정보 디비에 저장...언젠가 쓰겠지뭐
+ 업무명 : 페이스북 정보 저장
  전송방식 : post
  url : /login/facebook
  */
 router.post('/facebook', function(req, res, next) {
-  var access_token = "CAACEdEose0cBAC2qn4aEMcxozXifHYZCIFLlHWHWrgj3G9COyK0egEjvWGH32nK7vWRm751L6bZA0xQVOGwNCFYvoVZBmBxfkVBLa6Bg7OlRxgq12MfZBlxf2k70kYCMw02gGFxdZCSCq0p1pxmrsHkULT3SUQVI6ZAkItPYXtyaZAJTLiq6pxXCmnc7cL1KR2bbwBdZAIEMIWxEAB0Od5Hn";
-  //var access_token = req.body.access_token;
-
-  // user_id를 난수 6자리로 생성.
-  function randomValueBase64 (len) {
-    return crypto.randomBytes(Math.ceil(len * 3 / 4))
-      .toString('base64')   // convert to base64 format
-      .slice(0, len)        // return required number of characters
-      .replace(/\+/g, '0')  // replace '+' with '0'
-      .replace(/\//g, '0'); // replace '/' with '0'
-  }
-  var user_id = randomValueBase64(6);  // value 'jWHSOz'
-  //console.log('user_id',user_id);
-  req.session.user_id = user_id; // user_id 세션에 담기.
-  //console.log('req.session.user_id', req.session.user_id);
+  // var access_token = "CAACEdEose0cBAC2qn4aEMcxozXifHYZCIFLlHWHWrgj3G9COyK0egEjvWGH32nK7vWRm751L6bZA0xQVOGwNCFYvoVZBmBxfkVBLa6Bg7OlRxgq12MfZBlxf2k70kYCMw02gGFxdZCSCq0p1pxmrsHkULT3SUQVI6ZAkItPYXtyaZAJTLiq6pxXCmnc7cL1KR2bbwBdZAIEMIWxEAB0Od5Hn";
+  var access_token = req.body.access_token;
+  var user_id = req.session.user_id;
 
   var name = '';
   // 액세스 토큰으로 정보 받아오기.

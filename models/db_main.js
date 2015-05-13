@@ -8,6 +8,11 @@ var pool = mysql.createPool(db_config);
 var async = require('async');
 var fileutil = require('../utils/fileutil.js');
 
+/**
+ * 업무명 : 초기 이미지 선택 리스트
+ * @param  {Function} callback
+ * @return {[object]}            [랜덤 아이템이미지 배열]
+ */
 exports.cuList = function(callback){
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
@@ -105,6 +110,29 @@ exports.cuList = function(callback){
 			});
 		} // getItemImg
 
+	});
+};
+
+/**
+ * 업무명 : 사용자 선택정보저장
+ * @param  {[array]}   dataArr  [inputData : tel_uuid, user_id, user_gender, user_age, size_id]
+ * @param  {Function} callback
+ * @return {[boolean]}            [성공여부]
+ */
+exports.infoInsert = function(dataArr, callback){
+	pool.getConnection(function(err, conn){
+		if(err) console.log('err', err);
+		var sql = 'insert into TBUSR (tel_uuid, user_id, user_gender, user_age, size_id) values(?, ?, ?, ?, ?)';
+		conn.query(sql, dataArr, function(err, row){
+			if(err) console.log('err', err);
+			console.log('row', row);
+			var success = false;
+			if(row.affectedRows == 1){
+				success = true;
+			}
+			conn.release();
+			callback(success);
+		});
 	});
 };
 

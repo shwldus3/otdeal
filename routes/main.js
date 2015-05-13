@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var db_main = require('../models/db_main');
+var crypto = require('crypto');
+var async = require('async');
 
 // 몽고디비 사용
 var db = require('../models/db_config_mongo');
@@ -39,15 +41,49 @@ router.get('/curation', function(req, res, next){
 url : /main/userinfo
  */
 router.post('/userinfo', function(req, res, next) {
-	var uuid = req.body.uuid;
+	var tel_uuid = req.body.uuid;
+	var item_id1 = req.body.item_id1;
+	var item_id2 = req.body.item_id2;
+	var item_id3 = req.body.item_id3;
+	var user_gender = req.body.user_gender;
+	var user_age = req.body.user_age;
+	var size_id = req.body.size_id;
 
-	var result = {"user_id": "Q24S14"};
-	if(result){
-		res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-	}else{
-		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+	// user_id를 난수 6자리로 생성.
+	function randomValueBase64 (len) {
+	  return crypto.randomBytes(Math.ceil(len * 3 / 4))
+	    .toString('base64')   // convert to base64 format
+	    .slice(0, len)        // return required number of characters
+	    .replace(/\+/g, '0')  // replace '+' with '0'
+	    .replace(/\//g, '0'); // replace '/' with '0'
 	}
+	var user_id = randomValueBase64(6);  // value 'jWHSOz'
+	//console.log('user_id',user_id);
+	req.session.user_id = user_id; // user_id 세션에 담기.
+	//console.log('req.session.user_id', req.session.user_id);
 
+	var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id];
+
+ 	var itemArr = [item_id1, item_id2, item_id3];
+
+ 	for(i=0; i<3; i++){
+ 		var click = new ClickModel({
+ 			item_id : itemArr[i],
+ 			user_id : user_id
+ 		});
+ 		click.save(function(err, doc){
+ 			if(err) console.error('err', err);
+	 		console.log('doc', doc);
+		});
+ 	}; //for
+
+	db_main.infoInsert(dataArr, function(success){
+		if(success){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 });
 
 
