@@ -64,7 +64,7 @@ router.post('/userinfo', function(req, res, next) {
 
 	var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id];
 
- 	var itemArr = [item_id1, item_id2, item_id3];
+	var itemArr = [item_id1, item_id2, item_id3];
 
  	for(i=0; i<3; i++){
  		var click = new ClickModel({
