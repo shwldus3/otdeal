@@ -6,7 +6,6 @@ var async = require('async');
 var moment = require('moment');
 var path = require('path');
 
-var easyimage = require('easyimage');
 var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
