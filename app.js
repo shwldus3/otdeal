@@ -8,7 +8,6 @@ var compression = require('compression');
 var session = require('express-session');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 var login = require('./routes/login');
 var main = require('./routes/main');
 var item = require('./routes/item');
@@ -37,7 +36,6 @@ app.use(session({
 }));
 
 app.use('/', routes);
-app.use('/users', users);
 app.use('/login', login);
 app.use('/main', main);
 app.use('/item', item);
