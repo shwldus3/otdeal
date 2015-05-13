@@ -28,7 +28,7 @@ router.get('/curation', function(req, res, next){
 		 };
 
 		if(result){
-					res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : result});
+					res.json({ success:1, msg:"성공적으로 수행되었습니다.", imgArr : result});
 		}else{
 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 		}
@@ -69,7 +69,6 @@ router.post('/userinfo', function(req, res, next) {
 			if(row.length!=0){ // 기존에 저장된 uuid가 있으면
 				console.log('if');
 				user_id = row[0].user_id;
-				req.session.user_id = user_id; // user_id 세션에 담기.
 				// console.log('row[0].user_id', row[0].user_id);
 				console.log('user_id_if', user_id);
 
@@ -91,7 +90,6 @@ router.post('/userinfo', function(req, res, next) {
 				    .replace(/\//g, '0'); // replace '/' with '0'
 				}
 				user_id = randomValueBase64(6);  // value 'jWHSOz'
-				req.session.user_id = user_id; // user_id 세션에 담기.
 				console.log('user_id_else', user_id);
 
 				var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id];
@@ -126,7 +124,6 @@ router.post('/userinfo', function(req, res, next) {
 			}
 		});
 	}
-
 });
 
 

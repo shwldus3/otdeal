@@ -4,6 +4,24 @@ var db_mypage = require('../models/db_mypage');
 var async = require('async');
 
 /*
+ 업무명 : 회원정보 상세
+ 전송방식 : get
+ url : /mypage
+ */
+router.get('/', function(req, res, next) {
+
+  var user_id = req.session.user_id;
+
+  db_mypage.userInfoList(user_id, function(lists){
+    if(lists){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
+  });
+});
+
+/*
  업무명 : 회원정보 수정하기
  전송방식 : post
  url : /mypage
@@ -17,7 +35,7 @@ router.post('/', function(req, res, next){
 
   var dataArr = [size_id, user_age, user_gender, nickname, user_id];
 
-  db_mypage.update(dataArr, function(output) {
+  db_mypage.usrInfoUpdate(dataArr, function(output) {
     if(output){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
     } else {
@@ -38,7 +56,7 @@ router.get('/basket', function(req, res, next) {
 
   db_mypage.bsklist(user_id, function(lists){
     if(lists){
-      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : {bskArr:lists}});
     } else {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
     }
@@ -70,6 +88,28 @@ router.post('/basket', function(req, res, next) {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
     }
   });
+});
+
+/*
+ 업무명 : 찜목록 (위시리스트)
+ 전송방식 : get
+ url : /mypage/like
+ */
+router.get('/like', function(req, res, next) {
+  var user_id = req.session.user_id;
+  if(user_id){
+    console.log('user_id', user_id);
+    db_mypage.like(user_id, function(rows){
+      console.log('rows123', rows);
+      if(rows){
+        res.json({success : 1, msg : "성공적으로 수행되었습니다.", wishArr : rows});
+      } else {
+        res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+      }
+    });
+  } else {
+    res.json({success : 0, msg : "로그인을 해주세요.", result : "fail"});
+  }
 });
 
 module.exports = router;

@@ -8,7 +8,21 @@ var async = require('async');
 var logger = require('../routes/static/logger.js');
 var forEach = require('async-foreach').forEach;
 
-exports.update = function(dataArr, callback){
+exports.userInfoList = function(user_id, callback){
+  pool.getConnection(function(err, conn){
+    if(err) console.log('err', err);
+    var sql = 'select user_id, size_id, user_age, user_gender, nickname from TBUSR where user_id=?';
+
+    conn.query(sql, user_id, function(err, rows){
+      if(err) console.error('err', err);
+      console.log('rows', rows);
+      conn.release();
+      callback(rows);
+    });
+  });
+};
+
+exports.usrInfoUpdate = function(dataArr, callback){
   pool.getConnection(function(err, conn){
     if(err) console.error('err', err);
     var sql = "update TBUSR set size_id=?, user_age=?, user_gender=?, nickname=? where user_id = ?";
@@ -101,23 +115,18 @@ exports.bskupdate = function(dataArr, done){
  * @param  {[type]} calback [description]
  * @return {[type]}         [description]
  */
-exports.like = function(data, calback){
+exports.like = function(user_id, callback){
   pool.getConnection(function(err, conn){
-    if(err) logger.error('err', err);
-    var sql = 'select * from TBLK ';
-    conn.query(sql, data, function(err, row){
-      if(err) logger.error('err', err);
-      logger.debug('row',row);
-      var success = false;
-      if(row.affectedRows == 1){
-        success = true;
-      }
-      callback(success);
+    if(err) console.log('err', err);
+    var sql = 'select * from TBLK where user_id=?';
+    conn.query(sql, user_id, function(err, rows){
+      if(err) console.error('err', err);
+      console.log('rows', rows);
       conn.release();
+      callback(rows);
     });
   });
 };
-
 
 // exports.bskupdate2 = function(dataArr2, done){
 //   pool.getConnection(function(err, conn) {

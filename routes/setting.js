@@ -30,7 +30,7 @@ router.post('/push', function(req, res, next) {
 router.get('/notice', function(req, res, next) {
   db_setting.notice(function(ntcArr){
     if(ntcArr){
-      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : ntcArr});
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", ntcArr : ntcArr});
     } else {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
     }
