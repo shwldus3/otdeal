@@ -28,7 +28,7 @@ router.get('/curation', function(req, res, next){
 		 };
 
 		if(result){
-					res.json({ success:3, msg:"성공적으로 수행되었습니다.", result : result});
+					res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : result});
 		}else{
 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 		}
@@ -41,49 +41,92 @@ router.get('/curation', function(req, res, next){
 url : /main/userinfo
  */
 router.post('/userinfo', function(req, res, next) {
-	var tel_uuid = req.body.uuid;
+	var tel_uuid = req.body.tel_uuid;
 	var item_id1 = req.body.item_id1;
 	var item_id2 = req.body.item_id2;
 	var item_id3 = req.body.item_id3;
 	var user_gender = req.body.user_gender;
 	var user_age = req.body.user_age;
 	var size_id = req.body.size_id;
-
-	// user_id를 난수 6자리로 생성.
-	function randomValueBase64 (len) {
-	  return crypto.randomBytes(Math.ceil(len * 3 / 4))
-	    .toString('base64')   // convert to base64 format
-	    .slice(0, len)        // return required number of characters
-	    .replace(/\+/g, '0')  // replace '+' with '0'
-	    .replace(/\//g, '0'); // replace '/' with '0'
-	}
-	var user_id = randomValueBase64(6);  // value 'jWHSOz'
-	//console.log('user_id',user_id);
-	req.session.user_id = user_id; // user_id 세션에 담기.
-	//console.log('req.session.user_id', req.session.user_id);
-
-	var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id];
+	var user_id = '';
 
 	var itemArr = [item_id1, item_id2, item_id3];
 
- 	for(i=0; i<3; i++){
- 		var click = new ClickModel({
- 			item_id : itemArr[i],
- 			user_id : user_id
- 		});
- 		click.save(function(err, doc){
- 			if(err) console.error('err', err);
-	 		console.log('doc', doc);
-		});
- 	}; //for
-
-	db_main.infoInsert(dataArr, function(success){
-		if(success){
-			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
-		}else{
-			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+	async.waterfall([
+		function(callback){
+			findUUID(tel_uuid, callback);
 		}
+	], function(err, result){
+		if(err) console.error('err', err);
+		console.log('result', result);
 	});
+
+
+	function findUUID(tel_uuid, callback){
+		console.log('tel_uuid', tel_uuid);
+		db_main.findUUID(tel_uuid, function(row){
+			console.log('row', row);
+			if(row.length!=0){ // 기존에 저장된 uuid가 있으면
+				console.log('if');
+				user_id = row[0].user_id;
+				req.session.user_id = user_id; // user_id 세션에 담기.
+				// console.log('row[0].user_id', row[0].user_id);
+				console.log('user_id_if', user_id);
+
+				console.log('dataArr_if', dataArr);
+
+				if(user_id){
+					res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
+				}else{
+					res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+				}
+			} else { // 기존에 저장된 uuid가 없으면
+				console.log('else');
+				// user_id를 난수 6자리로 생성.
+				function randomValueBase64 (len) {
+				  return crypto.randomBytes(Math.ceil(len * 3 / 4))
+				    .toString('base64')   // convert to base64 format
+				    .slice(0, len)        // return required number of characters
+				    .replace(/\+/g, '0')  // replace '+' with '0'
+				    .replace(/\//g, '0'); // replace '/' with '0'
+				}
+				user_id = randomValueBase64(6);  // value 'jWHSOz'
+				req.session.user_id = user_id; // user_id 세션에 담기.
+				console.log('user_id_else', user_id);
+
+				var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id];
+				infoInsert(user_id, dataArr, callback);
+			}
+			callback(null, user_id);
+		});
+	}
+
+	function infoInsert(user_id, dataArr, callback){
+		console.log('user_id_함수', user_id);
+		console.log('dataArr_함수', dataArr);
+	 	for(i=0; i<3; i++){
+	 		var click = new ClickModel({
+	 			item_id : itemArr[i],
+	 			user_id : user_id
+	 		});
+	 		click.save(function(err, doc){
+	 			if(err) console.error('err', err);
+		 		// console.log('doc', doc);
+			});
+	 	}; //for
+
+		db_main.infoInsert(dataArr, function(success){
+			console.log('dataArr_db_infoInsert', dataArr);
+			if(success){
+				res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
+				callback(null, user_id);
+			}else{
+				res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+				callback(null);
+			}
+		});
+	}
+
 });
 
 

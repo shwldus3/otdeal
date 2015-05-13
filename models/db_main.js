@@ -114,12 +114,32 @@ exports.cuList = function(callback){
 };
 
 /**
- * 업무명 : 사용자 선택정보저장
- * @param  {[array]}   dataArr  [inputData : tel_uuid, user_id, user_gender, user_age, size_id]
+ * 업무명 : UUID 찾기
+ * @param  {[string]}   tel_uuid [사용자UUID]
  * @param  {Function} callback
- * @return {[boolean]}            [성공여부]
+ * @return {[object]}            [user_id, tel_uuid 객체]
  */
+ exports.findUUID = function(tel_uuid, callback){
+ 	pool.getConnection(function(err, conn){
+ 		if(err) console.log('err', err);
+ 		var sql = 'select user_id, tel_uuid from TBUSR where tel_uuid=?';
+ 		conn.query(sql, tel_uuid, function(err, row){
+ 			if(err) console.log('err', err);
+ 			console.log('row', row);
+ 			conn.release();
+ 			callback(row);
+ 		});
+ 	});
+ };
+
+ /**
+  * 업무명 : 사용자 선택정보저장
+  * @param  {[array]}   dataArr  [inputData : tel_uuid, user_id, user_gender, user_age, size_id]
+  * @param  {Function} callback
+  * @return {[boolean]}            [성공여부]
+  */
 exports.infoInsert = function(dataArr, callback){
+	console.log('dataArr', dataArr);
 	pool.getConnection(function(err, conn){
 		if(err) console.log('err', err);
 		var sql = 'insert into TBUSR (tel_uuid, user_id, user_gender, user_age, size_id) values(?, ?, ?, ?, ?)';
@@ -135,7 +155,6 @@ exports.infoInsert = function(dataArr, callback){
 		});
 	});
 };
-
 
 /**
  * 업무명 : 좋아요 등록
