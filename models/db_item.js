@@ -9,7 +9,7 @@ var path = require('path');
 var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
-var db_utils = require('./db_utils.js');
+var fileutil = require('../utils/fileutil.js');
 
 
 
@@ -148,7 +148,7 @@ function getImgInfo(item_id, callback){
 			conn.release();
 
 			//이미지 width, height 가져오기
-			db_utils.getFileInfo(rows, function(err, imagerows){
+			fileutil.getFileInfo(rows, function(err, imagerows){
 				callback(null, imagerows);
 			});
 		});
