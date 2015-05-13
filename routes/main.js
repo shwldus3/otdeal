@@ -465,22 +465,36 @@ router.post('/qna', function(req, res, next) {
 
 
 /*
-업무명 : 좋아요등록
+업무명 : 좋아요등록/삭제
 전송방식 : post
 url : /main/like
  */
 router.post('/like', function(req, res, next) {
-	var user_id = req.session.user_id;
+	var user_id = req.body.user_id;
 	var item_id = req.body.item_id;
+	var like_yn = req.body.like_yn;
 	var result = "ok";
 	var input_arr = [user_id, item_id];
-	db_main.like(input_arr, function(result){
-		if(result){
-			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:"success" });
-		}else{
-			res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result:"false" });
-		}
-	});
+	if(like_yn == 'Y'){
+		//좋아요 등록
+		db_main.likeRegister(input_arr, function(result){
+			if(result){
+				res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:"success" });
+			}else{
+				res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result:"false" });
+			}
+		});
+	}else{
+		//좋아요 삭제
+		db_main.likeDelete(input_arr, function(result){
+			if(result){
+				res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:"success" });
+			}else{
+				res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result:"false" });
+			}
+		});
+	}
+
 });
 
 

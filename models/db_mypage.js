@@ -5,6 +5,7 @@ var mysql = require('mysql');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
 var async = require('async');
+var logger = require('../routes/static/logger.js');
 var forEach = require('async-foreach').forEach;
 
 exports.update = function(dataArr, callback){
@@ -94,7 +95,28 @@ exports.bskupdate = function(dataArr, done){
 };
 
 
-
+/**
+ * 찜목록 (위시리스트)
+ * @param  {[type]} data    [description]
+ * @param  {[type]} calback [description]
+ * @return {[type]}         [description]
+ */
+exports.like = function(data, calback){
+  pool.getConnection(function(err, conn){
+    if(err) logger.error('err', err);
+    var sql = 'select * from TBLK ';
+    conn.query(sql, data, function(err, row){
+      if(err) logger.error('err', err);
+      logger.debug('row',row);
+      var success = false;
+      if(row.affectedRows == 1){
+        success = true;
+      }
+      callback(success);
+      conn.release();
+    });
+  });
+};
 
 
 // exports.bskupdate2 = function(dataArr2, done){

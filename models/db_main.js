@@ -137,17 +137,40 @@ exports.infoInsert = function(dataArr, callback){
 };
 
 
-
 /**
  * 업무명 : 좋아요 등록
  * @param  {[array]}   datas	[inputData : user_id, item_id]
  * @param  {Function} callback
  * @return {[boolean]}			[성공여부]
  */
-exports.like = function(datas, callback){
+exports.likeRegister = function(datas, callback){
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
 		var sql = "insert into TBLK (user_id, item_id, like_regdate) values(?, ?, now())";
+		conn.query(sql, datas, function(err, row){
+			if(err) console.error('err', err);
+			logger.debug('row', row);
+			var success = false;
+			if(row.affectedRows == 1){
+				success = true;
+			}
+			conn.release();
+			callback(success);
+		});
+	});
+};
+
+
+/**
+ * 업무명 : 좋아요 삭제
+ * @param  {[array]}   datas	[inputData : user_id, item_id]
+ * @param  {Function} callback
+ * @return {[boolean]}			[성공여부]
+ */
+exports.likeDelete = function(datas, callback){
+	pool.getConnection(function(err, conn){
+		if(err) console.error('err', err);
+		var sql = "delete from TBLK where user_id=? and item_id=?";
 		conn.query(sql, datas, function(err, row){
 			if(err) console.error('err', err);
 			logger.debug('row', row);

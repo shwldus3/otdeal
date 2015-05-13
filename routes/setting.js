@@ -9,7 +9,7 @@ var db_setting = require('../models/db_setting');
 router.post('/push', function(req, res, next) {
 
   var user_id = req.session.user_id;
-  var ps_usecheck = "0";
+  var ps_usecheck = req.body.ps_usecheck;
   var datas = [ps_usecheck, user_id];
   db_setting.push(datas, function(result){
     if(result){

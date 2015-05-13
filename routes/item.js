@@ -46,7 +46,6 @@ router.post('/', function(req, res, next) {
 	var item_id = req.body.item_id;
 	logger.debug(item_id);
 	db_item.itemDetail(item_id, function(err, outputData){
-		// logger.debug(outputData);
 		if(outputData){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:outputData });
 		}else{
@@ -65,7 +64,6 @@ router.post('/bsk', function(req, res, next) {
 	var user_id = req.session.user_id;
 	var item_id = req.body.item_id;
 	var bsk_cnt = req.body.bsk_cnt;
-	// var result = { "bsk_id": "1" };
 	var input_arr = [user_id, item_id, bsk_cnt];
 	db_item.bsk(input_arr, function(result){
 		if(result){
@@ -83,23 +81,23 @@ router.post('/bsk', function(req, res, next) {
 url : /item/order
  */
 router.post('/order', function(req, res, next) {
-	var inputDummy = {
-		"user_id" : "qwerty",
-		"itemArr" : [{
-			"item_id" : 256,
-			"item_cnt" : 1
-		},{
-			"item_id" : 257,
-			"item_cnt" : 1
-		}],
-		"total_price" : 134500,
-	};
-	var itemArr = inputDummy.itemArr;
-	var user_id = inputDummy.user_id;
-	var total_price = inputDummy.total_price;
-	// var itemArr = req.body.itemArr;
-	// var user_id = req.body.user_id;
-	// var total_price = req.body.total_price;
+	// var inputDummy = {
+	// 	"user_id" : "qwerty",
+	// 	"itemArr" : [{
+	// 		"item_id" : 256,
+	// 		"item_cnt" : 1
+	// 	},{
+	// 		"item_id" : 257,
+	// 		"item_cnt" : 1
+	// 	}],
+	// 	"total_price" : 134500,
+	// };
+	// var itemArr = inputDummy.itemArr;
+	// var user_id = inputDummy.user_id;
+	// var total_price = inputDummy.total_price;
+	var itemArr = req.body.itemArr;
+	var user_id = req.body.user_id;
+	var total_price = req.body.total_price;
 	logger.debug(itemArr);
 	logger.debug(user_id);
 	var datas = { 'itemArr' : itemArr, 'user_id' : user_id, 'total_price' : total_price };
