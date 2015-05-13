@@ -184,60 +184,89 @@ exports.bsk = function(datas, callback){
  * 주문하기
  * @param  {[object]}   datas    {itemArr, user_id, bsk_id, total_price}
  * @param  {Function} callback
- * @return {[object]}            {}
+ * @return {[string or boolean]}            {성공 시, 주문아이디 반환/ 실패 시, false 반환}
  */
 exports.order = function(datas, callback){
-	var user_id = datas.user_id;
-	var total_price = datas.total_price;
-
-	//TBODR insert
 	var currentDate = moment().format('YYYYMMDD');
 	var random6 = Math.floor(Math.random() * 1000000);
 	var order_id = currentDate + random6;
-	var success1, success2;
 	logger.debug(order_id);
-
-	var inputarr1 = [order_id, user_id, total_price];
 	pool.getConnection(function(err, conn){
 		if(err) console.err('err', err);
-		var sql = "insert into TBODR (order_id, user_id, order_paystat, total_price, order_regdate, order_stat) values(?, ?, '0', ?, now(), '0')";
-		conn.query(sql, inputarr1, function(err, row){
-			if(err) logger.error('err', err);
-			logger.debug('row', row);
-			success1 = false;
-			if(row.affectedRows == 1){
-				success1 = true;
+		async.series([
+			function(callback) {
+			// TBODR에 주문정보 Insert
+				logger.debug('setTBODR 실행');
+				setTBODR(conn, datas, order_id, callback);
+			},
+			function(callback) {
+			// TBODRITM에 주문 아이템 정보 Insert
+				logger.debug('setTBODRITM 실행');
+				setTBODRITM(conn, datas, order_id, callback);
 			}
-			conn.release();
+		],
+		// 모든 자료를 한번에 모아서 받을 수 있습니다.
+		function(err, results) {
+			if(results[0] && results[1]){
+				callback({"order_id" : order_id});
+			}else{
+				callback(false);
+			}
 		});
+		conn.release();
 	});
+};
 
-	async.forEachSeries(datas.itemArr, function(item, callback){
-		logger.debug(item.item_id);
-		pool.getConnection(function(err, conn){
-			if(err) logger.error('err', err);
-			var inputarr2 = [order_id, item.item_id, item.item_cnt];
-			var sql = "insert into TBODRITM (order_id, item_id, item_cnt) values(?, ?, ?)";
-			conn.query(sql, inputarr2, function(err, row){
-				if(err) logger.error('err', err);
-				logger.debug('row', row);
-				success2 = false;
-				if(row.affectedRows == 1){
-					success2 = true;
-				}
-				conn.release();
-				callback(null);
-			});
-		});
-	}, function(err){
-		// each(for) 문장 처리 후 결과 처리과정
-		logger.debug(success1);
-		logger.debug(success2);
-		if(success1 && success2){
-			callback({"order_id" : order_id});
+
+/**
+ * TBODR에 주문정보 Insert
+ * @param {[objects]}   [conn, datas, order_id, callback]
+ * @param {Function} callback		[boolean]
+ */
+function setTBODR(conn, datas, order_id, callback){
+	var inputArr = [order_id, datas.user_id, datas.total_price];
+	var sql = "insert into TBODR (order_id, user_id, order_paystat, total_price, order_regdate, order_stat) values(?, ?, '0', ?, now(), '0')";
+	conn.query(sql, inputArr, function(err, row){
+		if(err) logger.error('err', err);
+		logger.debug('row', row);
+		if(row.affectedRows == 1){
+			callback(null, true);
 		}else{
-			callback(false);
+			callback(null, false);
 		}
 	});
 
-};
+}
+
+
+/**
+ * TBODRITM에 주문 아이템 정보 Insert
+ * @param {[objects]}   conn, datas, order_id, callback
+ * @param {Function} callback  [boolean]
+ */
+function setTBODRITM(conn, datas, order_id, callback){
+	logger.debug("11111");
+	var success;
+	async.each(datas.itemArr, function(item, callback){
+		logger.debug(datas.itemArr);
+		var inputArr = [order_id, item.item_id, item.item_cnt];
+		var sql = "insert into TBODRITM (order_id, item_id, item_cnt) values(?, ?, ?)";
+		conn.query(sql, inputArr, function(err, row){
+			if(err) logger.error('err', err);
+			if(row.affectedRows == 1){
+				success = true;
+			}else{
+				success = false;
+			}
+			callback(null, success);
+		});
+	}, function(err, row){
+		// each(for) 문장 처리 후 결과 처리과정
+		if(err) callback(null, false);
+		if(success){
+			callback(null, true);
+		}else{
+			callback(null, false);
+		}
+	});
+}
