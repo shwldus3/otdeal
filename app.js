@@ -26,6 +26,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(require('express-domain-middleware'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(compression());
 
@@ -80,27 +81,17 @@ var server = http.createServer(app);
 server.listen(app.get('port'));
 console.log('서버가 '+app.get('port') + '번 포트에서 실행중입니다.');
 
-//// http와 https 정의
-//var http = require('http');
-//var https = require('https');
-//var fs = require('fs');
-//
-//var options = {
-//  key : fs.readFileSync('./key.pem', 'utf-8'),
-//  cert : fs.readFileSync('./server.crt','utf-8')
-//};
-////console.log('options.key',options.key);
-////console.log('options.cert',options.cert);
-//
-//var http_port = 80;
-//var https_port = 443;
-//
-//http.createServer(app).listen(http_port, function(){
-//  console.log('HTTP Server listening on port' + http_port);
-//});
-//
-//https.createServer(options, app).listen(https_port, function(){
-//  console.log('HTTPS Server listening on port' + https_port);
-//});
+var domain = require('domain');
+app.use(function(req, res, next) {
+    var requestDomain = domain.create();
+    requestDomain.add(req);
+    requestDomain.add(res);
+    requestDomain.on('error', function(err, res){
+      next(err);
+    });
+    requestDomain.run(function(res){
+      next();
+    });
+});
 
 module.exports = app;

@@ -52,4 +52,14 @@ router.post('/facebook', function(req, res, next) {
     });
 });
 
+
+/**
+ * 세션 임시저장
+ */
+router.get('/test', function(req, res, next) {
+  req.session.user_id = "qwerty";
+  res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+});
+
+
 module.exports = router;
