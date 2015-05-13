@@ -6,6 +6,7 @@ var logger = require('../routes/static/logger.js');
 var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
 var async = require('async');
+var fileutil = require('../utils/fileutil.js');
 
 exports.cuList = function(callback){
 	pool.getConnection(function(err, conn){
@@ -32,11 +33,11 @@ exports.cuList = function(callback){
 				var rNum;
 				var rNumArr = [];
 
-				// while문 4번 돌리기
+				// while문 12번 돌리기
 				async.whilst(
 			    function () {
 			    	// console.log('rNumArr.length', rNumArr.length);
-			    	return rNumArr.length < 4;
+			    	return rNumArr.length < 12;
 			    },
 			    function (callback) {
 		        // setTimeout(callback, 1000);
@@ -45,7 +46,7 @@ exports.cuList = function(callback){
 		        	function(callback){
 		        		(function(i){
 		        			process.nextTick(function(){
-		        				var num = row[0].num;
+		        				var num = (row[0].num)-1;
 		        				// console.log('num', num);
 		        				rNum = Math.floor((Math.random() * num) + 1);
 		        				// console.log('rNum', rNum);
@@ -60,8 +61,10 @@ exports.cuList = function(callback){
 		        		// console.log('check', check);
 		        		if(check==-1){
 		        			rNumArr.push(rNum);
+		        			callback(null, rNumArr);
+		        		} else {
+		        			callback(null);
 		        		}
-		        		callback(null, rNumArr);
 		        	}
 		        ], function(err, result){
 		        	// console.log('rNumArr',rNumArr);
@@ -72,6 +75,7 @@ exports.cuList = function(callback){
 			        if(err) console.log('err', err);
 			        // console.log('rNumArr',rNumArr);
 			        callback(null, rNumArr);
+			        // console.log('rNumArr.length', rNumArr.length);
 			    }
 				);
 			});
@@ -90,8 +94,11 @@ exports.cuList = function(callback){
 				});
 			}, function(err){
 					if(itemimgArr){
-						console.log('itemimgArr',itemimgArr);
-						callback(null, itemimgArr);
+						//이미지 width, height 가져오기
+						fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
+							callback(null, itemimgArr);
+						});
+						// callback(null, itemimgArr);
 					} else {
 						callback(null, false);
 					}

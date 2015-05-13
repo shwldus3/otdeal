@@ -15,49 +15,22 @@ url : /main/curation
 router.get('/curation', function(req, res, next){
 	// var uuid = req.body.uuid;
 	db_main.cuList(function(result){
+		var page1Arr = [result[0], result[1], result[2], result[3]];
+		var page2Arr = [result[4], result[5], result[6], result[7]];
+		var page3Arr = [result[8], result[9], result[10], result[11]];
+
+		var result = {
+			page1Arr : page1Arr,
+			page2Arr : page2Arr,
+			page3Arr : page3Arr
+		 };
+
 		if(result){
-					res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: result});
+					res.json({ success:3, msg:"성공적으로 수행되었습니다.", result : result});
 		}else{
 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 		}
 	});
-
-	// var images1 = [
-	// 	{
-	// 		"item_id" : 1,
-	//     "img_id" : 1,
-	//     "path" : "/images/item/thumbnail",
-	//     "img_name" : "img1.jpg",
-	//     "img_width" : 180,
-	//     "img_height" : 277
-	//   },
- //  	{
- //  		"item_id" : 2,
- //      "img_id" : 2,
- //      "path" : "/images/item/thumbnail",
- //      "img_name" : "img2.jpg",
- //      "img_width" : 180,
- //      "img_height" : 277
- //    },
- //  	{
- //  		"item_id" : 3,
- //      "img_id" : 3,
- //      "path" : "/images/item/thumbnail",
- //      "img_name" : "img3.jpg",
- //      "img_width" : 180,
- //      "img_height" : 277
- //    },
- //  	{
- //  		"item_id" : 4,
- //      "img_id" : 4,
- //      "path" : "/images/item/thumbnail",
- //      "img_name" : "img4.jpg",
- //      "img_width" : 180,
- //      "img_height" : 277
- //    }
- //  ];
-
-  // var outputs = [images1, images2, images3];
 });
 
 /*
@@ -369,7 +342,7 @@ router.get('/category', function(req, res, next) {
 
 /*
 업무명 : 최근본상품
-전송방식 : get
+전송방식 : post
 url : /main/recent
  */
 router.post('/recent', function(req, res, next) {
