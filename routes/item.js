@@ -14,7 +14,7 @@ var ClickModel = db.model('Click');
 url : /item/click
  */
 router.post('/click', function(req, res, next){
-	var user_id = req.body.user_id;
+	var user_id = req.session.user_id;
 	var item_id = req.body.item_id;
 
 	var click = new ClickModel({
@@ -62,7 +62,7 @@ router.post('/', function(req, res, next) {
 url : /item/bsk
  */
 router.post('/bsk', function(req, res, next) {
-	var user_id = req.body.user_id;
+	var user_id = req.session.user_id;
 	var item_id = req.body.item_id;
 	var bsk_cnt = req.body.bsk_cnt;
 	// var result = { "bsk_id": "1" };

@@ -9,13 +9,6 @@ var async = require('async');
  url : /mypage
  */
 router.post('/', function(req, res, next){
-  console.log('req.body', req.body);
-  //var title = req.body.title;
-  //var content = req.body.content;
-  //var	num = req.body.num;
-  //var	passwd = req.body.passwd;
-  //var datas = [title, content, num, passwd];
-
   var user_id = req.session.user_id;
   var size_id = req.body.size_name;
   var user_age = req.body.user_age;
@@ -41,8 +34,7 @@ router.post('/', function(req, res, next){
  */
 router.get('/basket', function(req, res, next) {
 
-  var user_id = 'qwerty';
-  //var user_id = req.session.user_id;
+  var user_id = req.session.user_id;
 
   db_mypage.bsklist(user_id, function(lists){
     if(lists){
@@ -61,9 +53,7 @@ router.get('/basket', function(req, res, next) {
  */
 router.post('/basket', function(req, res, next) {
 
-  //var user_id = req.session.user_id;
-
-  var user_id = "qwerty";
+  var user_id = req.session.user_id;
   var bsk_cnt = req.body.bsk_cnt;
   var color_name = req.body.color_name;
   var size_id = req.body.size_id;
@@ -80,83 +70,6 @@ router.post('/basket', function(req, res, next) {
       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
     }
   });
-
-  // async.waterfall([
-  //   function(callback){
-  //     db_mypage.bskupdate(dataArr, function(row) {
-  //       if(row){
-  //         var item_id = row;
-  //         var dataArr2 = [bsk_cnt, item_id, user_id, bsk_id];
-  //         callback(null, dataArr2);
-  //       } else {
-  //         res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-  //       }
-  //     });
-  //   },
-  //   function(dataArr2, callback){
-  //     db_mypage.bskupdate2(dataArr2, function(success) {
-  //       if(success){
-  //         res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
-  //       } else {
-  //         res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-  //       }
-  //     });
-  //   }
-  // ],
-  //   function(err, result){
-  //     if(err) console.error('err', err);
-  //     console.log('result', result);
-
-  //   }
-  // );
 });
-
-
-/*
- 업무명 : 주문내역 리스트
- 전송방식 : get
- url : /mypage/order
- */
-// router.get('/order', function(req, res, next) {
-
-//   var user_id = 'qwerty';
-//   //var user_id = req.session.user_id;
-//   // var order_id = "20150507222222";
-//   // var dataArr = [user_id, order_id];
-
-//   db_mypage.orderlist(user_id, function(lists){
-
-//     if(lists){
-//       console.log('lists', lists);
-
-//       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : lists});
-//     } else {
-//       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-//     }
-
-//   });
-// });
-
-
-
-
-//  업무명 : 주문배송취소
-//  전송방식 : post
-//  url : /mypage/order/delete
-
-// router.post('/order/delete', function(req, res, next) {
-//   var user_id = req.session.user_id;
-//   var order_id = "20150427123456";
-
-//   var dataArr = [user_id, order_id];
-
-//   db_mypage.delete(dataArr, function(success){
-//     if(success){
-//       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
-//     } else {
-//       res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-//     }
-//   });
-// });
 
 module.exports = router;

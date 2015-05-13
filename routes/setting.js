@@ -8,7 +8,7 @@ var db_setting = require('../models/db_setting');
  */
 router.post('/push', function(req, res, next) {
 
-  var user_id = "qwerty";
+  var user_id = req.session.user_id;
   var ps_usecheck = "0";
   var datas = [ps_usecheck, user_id];
   db_setting.push(datas, function(result){
@@ -28,7 +28,6 @@ router.post('/push', function(req, res, next) {
  */
 
 router.get('/notice', function(req, res, next) {
-
   db_setting.notice(function(ntcArr){
     if(ntcArr){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : ntcArr});
@@ -45,9 +44,7 @@ router.get('/notice', function(req, res, next) {
  url : /setting/version
  */
 router.get('/version', function(req, res, next) {
-
   var os_gubun = req.body.os_gubun;
-
   db_setting.version(function(os_gubun, result){
     if(result){
       res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : result});
@@ -56,6 +53,5 @@ router.get('/version', function(req, res, next) {
     }
   });
 });
-
 
 module.exports = router;
