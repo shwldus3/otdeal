@@ -13,131 +13,61 @@ var ClickModel = db.model('Click');
 url : /main/curation
  */
 router.get('/curation', function(req, res, next){
-	var uuid = '12341234';
-	var images1 = [
-		{
-			"item_id" : 1,
-	    "img_id" : 1,
-	    "path" : "/images/item/thumbnail",
-	    "img_name" : "img1.jpg",
-	    "img_width" : 180,
-	    "img_height" : 277
-	  },
-  	{
-  		"item_id" : 2,
-      "img_id" : 2,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img2.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    },
-  	{
-  		"item_id" : 3,
-      "img_id" : 3,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img3.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    },
-  	{
-  		"item_id" : 4,
-      "img_id" : 4,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img4.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    }
-  ];
+	// var uuid = req.body.uuid;
+	db_main.cuList(function(result){
+		if(result){
+					res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: result});
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 
-	var images2 = [
-		{
-			"item_id" : 5,
-	    "img_id" : 5,
-	    "path" : "/images/item/thumbnail",
-	    "img_name" : "img5.jpg",
-	    "img_width" : 180,
-	    "img_height" : 277
-	  },
-  	{
-  		"item_id" : 6,
-      "img_id" : 6,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img6.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    },
-  	{
-  		"item_id" : 7,
-      "img_id" : 7,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img7.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    },
-  	{
-  		"item_id" : 8,
-      "img_id" : 8,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img8.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    }
-  ];
+	// var images1 = [
+	// 	{
+	// 		"item_id" : 1,
+	//     "img_id" : 1,
+	//     "path" : "/images/item/thumbnail",
+	//     "img_name" : "img1.jpg",
+	//     "img_width" : 180,
+	//     "img_height" : 277
+	//   },
+ //  	{
+ //  		"item_id" : 2,
+ //      "img_id" : 2,
+ //      "path" : "/images/item/thumbnail",
+ //      "img_name" : "img2.jpg",
+ //      "img_width" : 180,
+ //      "img_height" : 277
+ //    },
+ //  	{
+ //  		"item_id" : 3,
+ //      "img_id" : 3,
+ //      "path" : "/images/item/thumbnail",
+ //      "img_name" : "img3.jpg",
+ //      "img_width" : 180,
+ //      "img_height" : 277
+ //    },
+ //  	{
+ //  		"item_id" : 4,
+ //      "img_id" : 4,
+ //      "path" : "/images/item/thumbnail",
+ //      "img_name" : "img4.jpg",
+ //      "img_width" : 180,
+ //      "img_height" : 277
+ //    }
+ //  ];
 
-	var images3 = [
-		{
-			"item_id" : 9,
-	    "img_id" : 9,
-	    "path" : "/images/item/thumbnail",
-	    "img_name" : "img9.jpg",
-	    "img_width" : 180,
-	    "img_height" : 277
-	  },
-  	{
-  		"item_id" : 10,
-      "img_id" : 10,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img10.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    },
-  	{
-  		"item_id" : 11,
-      "img_id" : 11,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img11.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    },
-  	{
-  		"item_id" : 1,
-      "img_id" : 1,
-      "path" : "/images/item/thumbnail",
-      "img_name" : "img1.jpg",
-      "img_width" : 180,
-      "img_height" : 277
-    }
-  ];
-
-  var outputs = [images1, images2, images3];
-
-  if(outputs){
-    res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : outputs});
-  } else {
-    res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-  }
+  // var outputs = [images1, images2, images3];
 });
 
 /*
-업무명 : 스타일선택
+업무명 : 사용자 선택정보저장
 전송방식 : post
-url : /main/style
+url : /main/userinfo
  */
-router.post('/style', function(req, res, next) {
-	var uuid = "";
-	var stA_name = "";
-	var stB_name = "";
-	var stC_name = "";
+router.post('/userinfo', function(req, res, next) {
+	var uuid = req.body.uuid;
+
 	var result = {"user_id": "Q24S14"};
 	if(result){
 		res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });

@@ -10,15 +10,98 @@ var async = require('async');
 exports.cuList = function(callback){
 	pool.getConnection(function(err, conn){
 		if(err) console.error('err', err);
-		conn.query(sql, function(err, row){
-			if(err) console.error('err', err);
 
+		async.waterfall([
+			function(callback){
+				getRNumArr(callback);
+			},
+			function(rNumArr, callback){
+				getItemImg(rNumArr, callback);
+			}
+		],
+		function(err, result){
+			console.log('result', result);
 			conn.release();
-			callback(success);
-
+			callback(result);
 		});
+
+		function getRNumArr(callback){
+			var sql = 'select count(*) as num from itemImg';
+			conn.query(sql, function(err, row){
+				if(err) console.error('err', err);
+				var rNum;
+				var rNumArr = [];
+
+				// while문 4번 돌리기
+				async.whilst(
+			    function () {
+			    	// console.log('rNumArr.length', rNumArr.length);
+			    	return rNumArr.length < 4;
+			    },
+			    function (callback) {
+		        // setTimeout(callback, 1000);
+		        var i = 0;
+		        async.waterfall([
+		        	function(callback){
+		        		(function(i){
+		        			process.nextTick(function(){
+		        				var num = row[0].num;
+		        				// console.log('num', num);
+		        				rNum = Math.floor((Math.random() * num) + 1);
+		        				// console.log('rNum', rNum);
+		        				callback(null, rNum);
+		        			});
+		        		})(i);
+		        		i = i + 1;
+		        	},
+		        	function(rNum, callback){
+		        		// console.log('rNum', rNum);
+		        		var check = rNumArr.indexOf(rNum);
+		        		// console.log('check', check);
+		        		if(check==-1){
+		        			rNumArr.push(rNum);
+		        		}
+		        		callback(null, rNumArr);
+		        	}
+		        ], function(err, result){
+		        	// console.log('rNumArr',rNumArr);
+		        	callback();
+		        });
+			    },
+			    function (err) {
+			        if(err) console.log('err', err);
+			        // console.log('rNumArr',rNumArr);
+			        callback(null, rNumArr);
+			    }
+				);
+			});
+		} // getRNumArr
+
+		function getItemImg(rNumArr, callback){
+			var itemimgArr = [];
+			async.each(rNumArr, function(limit, callback){
+				var sql = 'select * from itemImg order by item_id asc limit ?,1';
+				conn.query(sql, limit, function(err, rows){
+					// console.log('rows', rows);
+					if(err) console.error('err', err);
+					itemimgArr.push(rows[0]);
+					// console.log('itemimgArr',itemimgArr);
+					callback(null, itemimgArr);
+				});
+			}, function(err){
+					if(itemimgArr){
+						console.log('itemimgArr',itemimgArr);
+						callback(null, itemimgArr);
+					} else {
+						callback(null, false);
+					}
+			});
+		} // getItemImg
+
 	});
 };
+
+
 
 /**
  * 업무명 : 좋아요 등록
