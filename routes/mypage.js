@@ -96,7 +96,6 @@ router.post('/basket', function(req, res, next) {
  */
 router.get('/like', function(req, res, next) {
   var user_id = req.session.user_id;
-  if(user_id){
     console.log('user_id', user_id);
     db_mypage.like(user_id, function(rows){
       console.log('rows123', rows);
@@ -106,9 +105,6 @@ router.get('/like', function(req, res, next) {
         res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
       }
     });
-  } else {
-    res.json({success : 0, msg : "로그인을 해주세요.", result : "fail"});
-  }
 });
 
 module.exports = router;

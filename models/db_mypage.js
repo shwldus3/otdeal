@@ -121,6 +121,7 @@ exports.like = function(user_id, callback){
       console.log('rows', rows);
       //이미지 width, height 가져오기
       fileutil.getFileInfo(rows, function(err, rows){
+        if(err) throw err;
         callback(rows);
       });
       conn.release();
