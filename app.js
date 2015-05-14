@@ -45,15 +45,17 @@ app.use('/setting', setting);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  res.json({ success:2, msg:"해당 프로토콜을 찾을 수 없습니다." });
-  next(err);
+  res.json({ success:0, msg:"[404] 해당 프로토콜을 찾을 수 없습니다."});
+  next();
 });
 
 // error handlers
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+  console.log(err);
+  res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", err: err.message});
   next();
+  // next(err);
 });
 
 

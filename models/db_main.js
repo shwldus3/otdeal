@@ -15,7 +15,7 @@ var fileutil = require('../utils/fileutil.js');
  */
 exports.cuList = function(callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 
 		async.waterfall([
 			function(callback){
@@ -26,6 +26,7 @@ exports.cuList = function(callback){
 			}
 		],
 		function(err, result){
+			if(err) throw err;
 			console.log('result', result);
 			conn.release();
 			callback(result);
@@ -34,7 +35,7 @@ exports.cuList = function(callback){
 		function getRNumArr(callback){
 			var sql = 'select count(*) as num from itemImg';
 			conn.query(sql, function(err, row){
-				if(err) console.error('err', err);
+				if(err) throw err;
 				var rNum;
 				var rNumArr = [];
 
@@ -77,7 +78,7 @@ exports.cuList = function(callback){
 		        });
 			    },
 			    function (err) {
-			        if(err) console.log('err', err);
+			        if(err) throw err;
 			        // console.log('rNumArr',rNumArr);
 			        callback(null, rNumArr);
 			        // console.log('rNumArr.length', rNumArr.length);
@@ -92,21 +93,23 @@ exports.cuList = function(callback){
 				var sql = 'select * from itemImg order by item_id asc limit ?,1';
 				conn.query(sql, limit, function(err, rows){
 					// console.log('rows', rows);
-					if(err) console.error('err', err);
+					if(err) throw err;
 					itemimgArr.push(rows[0]);
 					// console.log('itemimgArr',itemimgArr);
 					callback(null, itemimgArr);
 				});
 			}, function(err){
-					if(itemimgArr){
-						//이미지 width, height 가져오기
-						fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
-							callback(null, itemimgArr);
-						});
-						// callback(null, itemimgArr);
-					} else {
-						callback(null, false);
-					}
+				if(err) throw err;
+				if(itemimgArr){
+					//이미지 width, height 가져오기
+					fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
+						if(err) throw err;
+						callback(null, itemimgArr);
+					});
+					// callback(null, itemimgArr);
+				} else {
+					callback(null, false);
+				}
 			});
 		} // getItemImg
 
@@ -121,10 +124,10 @@ exports.cuList = function(callback){
  */
  exports.findUUID = function(tel_uuid, callback){
  	pool.getConnection(function(err, conn){
- 		if(err) console.log('err', err);
+ 		if(err) throw err;
  		var sql = 'select user_id, tel_uuid from TBUSR where tel_uuid=?';
  		conn.query(sql, tel_uuid, function(err, row){
- 			if(err) console.log('err', err);
+ 			if(err) throw err;
  			console.log('row', row);
  			conn.release();
  			callback(row);
@@ -141,10 +144,10 @@ exports.cuList = function(callback){
 exports.infoInsert = function(dataArr, callback){
 	console.log('dataArr', dataArr);
 	pool.getConnection(function(err, conn){
-		if(err) console.log('err', err);
+		if(err) throw err;
 		var sql = 'insert into TBUSR (tel_uuid, user_id, user_gender, user_age, size_id) values(?, ?, ?, ?, ?)';
 		conn.query(sql, dataArr, function(err, row){
-			if(err) console.log('err', err);
+			if(err) throw err;
 			console.log('row', row);
 			var success = false;
 			if(row.affectedRows == 1){
@@ -164,10 +167,10 @@ exports.infoInsert = function(dataArr, callback){
  */
 exports.likeRegister = function(datas, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		var sql = "insert into TBLK (user_id, item_id, like_regdate) values(?, ?, now())";
 		conn.query(sql, datas, function(err, row){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			logger.debug('row', row);
 			var success = false;
 			if(row.affectedRows == 1){
@@ -188,10 +191,10 @@ exports.likeRegister = function(datas, callback){
  */
 exports.likeDelete = function(datas, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		var sql = "delete from TBLK where user_id=? and item_id=?";
 		conn.query(sql, datas, function(err, row){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			logger.debug('row', row);
 			var success = false;
 			if(row.affectedRows == 1){
@@ -213,13 +216,13 @@ exports.likeDelete = function(datas, callback){
 exports.recentList = function(dataArr, callback){
 	console.log('dataArr', dataArr);
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		var itmArr = [];
 		async.each(dataArr, function(item_id, callback){
 			console.log('item_id', item_id);
 			var sql = "select item_id, path, img_name from TBIMG where item_id=? and img_thumbnail='Y'";
 			conn.query(sql, item_id, function(err, row){
-				if(err) console.error('err', err);
+				if(err) throw err;
 				console.log('row', row);
 				if(row[0]) {
 					itmArr.push(row[0]);
@@ -228,6 +231,7 @@ exports.recentList = function(dataArr, callback){
 				callback(null, itmArr);
 			});
 		}, function(err){
+			if(err) throw err;
 			if(itmArr){
 				callback(itmArr);
 			} else {
@@ -247,10 +251,10 @@ exports.recentList = function(dataArr, callback){
  */
 exports.qnalist = function(data, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		var sql = "select qna_id, qna_title, qna_content, qna_gubun, user_id, qna_parentid, qna_regdate, qna_regtime from TBQNA where item_id=?";
 		conn.query(sql, data, function(err, rows){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			logger.debug('rows', rows);
 			conn.release();
 			var result = {qnaArr : rows};
@@ -268,11 +272,11 @@ exports.qnalist = function(data, callback){
  */
 exports.qnaInsert_Q = function(datas, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		logger.debug(datas);
 		var sql = "insert into TBQNA (shop_id, item_id, user_id, qna_title, qna_content, qna_gubun, qna_regdate) values(?, ?, ?, ?, ?, ?, now())";
 		conn.query(sql, datas, function(err, row){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			logger.debug('row', row);
 			var success = false;
 			if(row.affectedRows == 1){
@@ -293,10 +297,10 @@ exports.qnaInsert_Q = function(datas, callback){
  */
 exports.qnaInsert_A = function(datas, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		var sql = "insert into TBQNA (shop_id, item_id, user_id, qna_parentid, qna_title, qna_content, qna_gubun, qna_regdate) values(?, ?, ?, ?, ?, ?, ?, now())";
 		conn.query(sql, datas, function(err, row){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			logger.debug('row', row);
 			var success = false;
 			if(row.affectedRows == 1){

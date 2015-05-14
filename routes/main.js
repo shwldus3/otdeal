@@ -57,7 +57,7 @@ router.post('/userinfo', function(req, res, next) {
 			findUUID(tel_uuid, callback);
 		}
 	], function(err, result){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		console.log('result', result);
 	});
 
@@ -108,7 +108,7 @@ router.post('/userinfo', function(req, res, next) {
 	 			user_id : user_id
 	 		});
 	 		click.save(function(err, doc){
-	 			if(err) console.error('err', err);
+	 			if(err) throw err;
 		 		// console.log('doc', doc);
 			});
 	 	}; //for
@@ -425,7 +425,7 @@ router.post('/recent', function(req, res, next) {
 	var user_id = req.session.user_id;
 
 	ClickModel.find({user_id:user_id},{item_id:1}).sort({regtime:-1}).limit(10).exec(function(err, docs){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		// console.log('docs', docs);
 		// console.log('JSON.stringify(docs)', JSON.stringify(docs));
 

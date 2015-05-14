@@ -12,9 +12,9 @@ var utils = {
 	getFileInfo : function (rows, callback){
 		var filepath;
 		async.eachSeries(rows, function(row, callback){
-			logger.debug(row);
+			// logger.debug(row);
 			filepath = path.join('./public', row.path, row.img_name);
-			logger.debug(filepath);
+			// logger.debug(filepath);
 			imagemagick.identify(filepath, function(err, features){
 				if (err){
 					row.width = null;

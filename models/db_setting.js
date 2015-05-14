@@ -14,10 +14,10 @@ var pool = mysql.createPool(db_config);
  */
 exports.push = function(datas, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.err('err', err);
+		if(err) throw err;
 		var sql = "update TBPUSH set ps_usecheck=?, ps_upregdate=now(), ps_upregtime=current_timestamp where user_id=?";
 		conn.query(sql, datas, function(err, row){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			console.log('row', row);
 			var success = false;
 			if(row.affectedRows == 1){
@@ -37,10 +37,10 @@ exports.push = function(datas, callback){
  */
 exports.notice = function(callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.err('err', err);
+		if(err) throw err;
 		var sql = "select ntc.ntc_id, ntc.admin_id, adm.admin_name, ntc.ntc_title, ntc.ntc_content, ntc.ntc_stat, ntc.ntc_regdate, ntc.ntc_regtime from TBNTC ntc, TBADM adm where ntc.admin_id = adm.admin_id";
 		conn.query(sql, function(err, rows){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			console.log('rows', rows);
 			conn.release();
 			callback(rows);
@@ -57,10 +57,10 @@ exports.notice = function(callback){
  */
 exports.version = function(data, callback){
 	pool.getConnection(function(err, conn){
-		if(err) console.error('err', err);
+		if(err) throw err;
 		var sql = "select version from TBVS where os_gubun=? and vs_check='Y'";
 		conn.query(sql, data, function(err, rows){
-			if(err) console.error('err', err);
+			if(err) throw err;
 			console.log('rows', rows[0]);
 			callback(rows[0]);
 		});
