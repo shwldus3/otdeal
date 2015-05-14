@@ -51,7 +51,7 @@ router.post('/', function(req, res, next){
 	var send_msg = req.body.send_msg;
 	var send_title = req.body.send_title;
 
-	db_push.push(function(result){`
+	db_push.push(function(result){
 		if(!result) throw "fail";
 		if(result.length > 0){
 			message.addData(send_title);
