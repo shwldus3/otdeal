@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var db_mypage = require('../models/db_mypage');
 var async = require('async');
-
 /*
  업무명 : 회원정보 상세
  전송방식 : get
@@ -102,7 +101,7 @@ router.get('/like', function(req, res, next) {
     db_mypage.like(user_id, function(rows){
       console.log('rows123', rows);
       if(rows){
-        res.json({success : 1, msg : "성공적으로 수행되었습니다.", wishArr : rows});
+        res.json({success : 1, msg : "성공적으로 수행되었습니다.", likeArr : rows});
       } else {
         res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
       }

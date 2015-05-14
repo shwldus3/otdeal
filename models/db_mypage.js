@@ -7,14 +7,15 @@ var pool = mysql.createPool(db_config);
 var async = require('async');
 var logger = require('../routes/static/logger.js');
 var forEach = require('async-foreach').forEach;
+var fileutil = require('../utils/fileutil.js');
 
 exports.userInfoList = function(user_id, callback){
   pool.getConnection(function(err, conn){
-    if(err) console.log('err', err);
+    if(err) throw err;
     var sql = 'select user_id, size_id, user_age, user_gender, nickname from TBUSR where user_id=?';
 
     conn.query(sql, user_id, function(err, rows){
-      if(err) console.error('err', err);
+      if(err) throw
       console.log('rows', rows);
       conn.release();
       callback(rows);
@@ -24,14 +25,11 @@ exports.userInfoList = function(user_id, callback){
 
 exports.usrInfoUpdate = function(dataArr, callback){
   pool.getConnection(function(err, conn){
-    if(err) console.error('err', err);
+    if(err) throw
     var sql = "update TBUSR set size_id=?, user_age=?, user_gender=?, nickname=? where user_id = ?";
     conn.query(sql, dataArr, function(err, row){
-      if(err) {
-        console.log('err', err);
-      } else {
-        console.log('row', row);
-      }
+      if(err) throw err;
+      console.log('row', row);
       var output = false;
       if(row.affectedRows == 1){
         output = true;
@@ -44,11 +42,11 @@ exports.usrInfoUpdate = function(dataArr, callback){
 
 exports.bsklist = function(user_id, callback){
   pool.getConnection(function(err, conn){
-    if(err) console.log('err', err);
+    if(err) throw err;
     var sql = "select bsk.bsk_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name from TBBSK bsk ,TBITM itm, TBSZ sz where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id;";
 
     conn.query(sql, user_id, function(err, rows){
-      if(err) console.error('err', err);
+      if(err) throw
       console.log('rows', rows);
       conn.release();
       callback(rows);
@@ -58,7 +56,7 @@ exports.bsklist = function(user_id, callback){
 
 exports.bskupdate = function(dataArr, done){
   pool.getConnection(function(err, conn) {
-    if(err) console.log('err', err);
+    if(err) throw err;
 
     async.waterfall([
       function(callback){
@@ -69,7 +67,7 @@ exports.bskupdate = function(dataArr, done){
       }
     ],
     function(err, success){
-      if(err) console.error('err', err);
+      if(err) throw err;
       done(success);
       conn.release();
     });
@@ -79,7 +77,7 @@ exports.bskupdate = function(dataArr, done){
       console.log('dataSelect', dataSelect);
       var sql = 'select itm.item_id from TBITM itm, (select item_grid from TBITM where item_id=?) aa where itm.color_name=? and itm.size_id=? and itm.item_grid = aa.item_grid';
       conn.query(sql, dataSelect, function(err, row){
-        if(err) console.log('err', err);
+        if(err) throw err;
         console.log('row', row);
         // conn.release();
         callback(null, dataArr, row);
@@ -92,9 +90,8 @@ exports.bskupdate = function(dataArr, done){
       console.log('dataUpdate', dataUpdate);
       var sql = 'update TBBSK set bsk_cnt=?, item_id = ? where user_id=? and bsk_id=?';
         conn.query(sql, dataUpdate, function(err, row){
-          if(err) console.log('err', err);
+          if(err) throw err;
           console.log('row', row);
-
           var success = false;
           if(row.affectedRows == 1) {
             success = true;
@@ -117,13 +114,17 @@ exports.bskupdate = function(dataArr, done){
  */
 exports.like = function(user_id, callback){
   pool.getConnection(function(err, conn){
-    if(err) console.log('err', err);
-    var sql = 'select * from TBLK where user_id=?';
+    if(err) throw err;
+    var sql = 'select itm.item_name, itm.item_price, itm.item_saleprice, img.path, img.img_name, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as discount_rate from TBLK lk, TBITM itm, itemImg img where lk.user_id= ? and lk.item_id = itm.item_id and lk.item_id = img.item_id';
     conn.query(sql, user_id, function(err, rows){
-      if(err) console.error('err', err);
+      if(err) throw
       console.log('rows', rows);
+      //이미지 width, height 가져오기
+      fileutil.getFileInfo(rows, function(err, rows){
+        callback(rows);
+      });
       conn.release();
-      callback(rows);
+      // callback(rows);
     });
   });
 };
