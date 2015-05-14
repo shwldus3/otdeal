@@ -13,6 +13,7 @@ var main = require('./routes/main');
 var item = require('./routes/item');
 var mypage = require('./routes/mypage');
 var setting = require('./routes/setting');
+var push = require('./routes/push');
 
 var app = express();
 
@@ -42,6 +43,7 @@ app.use('/main', main);
 app.use('/item', item);
 app.use('/mypage', mypage);
 app.use('/setting', setting);
+app.use('/push', push);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -53,7 +55,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   console.log(err);
-  res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", err: err.message});
+  res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result: err.message});
   next();
   // next(err);
 });

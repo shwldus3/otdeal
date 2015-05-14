@@ -1,24 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var db_setting = require('../models/db_setting');
-/*
- 업무명 : 푸쉬여부수정
- 전송방식 : post
- url : /setting/push
- */
-router.post('/push', function(req, res, next) {
-
-  var user_id = req.session.user_id;
-  var ps_usecheck = req.body.ps_usecheck;
-  var datas = [ps_usecheck, user_id];
-  db_setting.push(datas, function(result){
-    if(result){
-      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
-    } else {
-      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
-    }
-  });
-});
 
 
 /*

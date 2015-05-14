@@ -22,6 +22,7 @@
     "mongoose-auto-increment": "^4.0.0",
     "morgan": "~1.5.1",
     "mysql": "^2.6.2",
+    "node-gcm": "^0.9.15",
     "serve-favicon": "~2.2.0",
     "winston": "^1.0.0"
   }
