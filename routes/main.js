@@ -423,7 +423,6 @@ url : /main/recent
  */
 router.post('/recent', function(req, res, next) {
 	var user_id = req.body.user_id;
-
 	ClickModel.find({user_id:user_id},{item_id:1}).sort({regtime:-1}).limit(10).exec(function(err, docs){
 		if(err) throw err;
 		// console.log('docs', docs);
@@ -519,6 +518,14 @@ router.post('/like', function(req, res, next) {
 		//좋아요 등록
 		db_main.likeRegister(input_arr, function(result){
 			if(result){
+				var click = new ClickModel({
+					user_id : user_id,
+					item_id : item_id,
+					gubun : 'like'
+				});
+				click.save(function(err, result){
+					if(err) throw err;
+				});
 				res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:"success" });
 			}else{
 				res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", result:"false" });

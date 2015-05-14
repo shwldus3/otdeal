@@ -103,7 +103,7 @@ exports.cuList = function(callback){
 				if(itemimgArr){
 					//이미지 width, height 가져오기
 					fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
-						if(err) throw err;
+						// if(err) throw err;
 						callback(null, itemimgArr);
 					});
 					// callback(null, itemimgArr);

@@ -4,12 +4,17 @@ var db = require('../models/db_config_mongo');
 var autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(db);
 
+/**
+ * ClickSchema
+ * @type {mongoose}
+ * gubun - 그냥클릭:click, 찜:like, 장바구니:basket, 구매:order
+ */
 var ClickSchema = new mongoose.Schema({
 	user_id : String,
 	item_id : Number,
+	gubun : String,
 	regtime : { type : Date, default : Date.now }
 });
-
 
 // 몽고디비에서 날짜형식 바꾸기 위한 소스
 ClickSchema.virtual('myregdate').get(function(){
