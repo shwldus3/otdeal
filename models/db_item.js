@@ -81,7 +81,7 @@ function getItemInfo(row, item_id, callback){
 		logger.debug('getItemInfo >>>>> 단일 상품인 경우');
 		pool.getConnection(function(err, conn){
 			if(err) throw err;
-			var sql = "select a.item_id, a.item_name, a.item_grcd, a.color_name as item_color, a.item_content, a.item_cnt, a.item_price, a.item_saleprice, ((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.size_name as item_size, a.size_id as item_sizeid, b.shop_id, b.shop_name, b.shop_addr as shop_address, b.shop_tel, b.shop_tel_hm, b.shop_ceo from TBITM as a, TBSHP as b where a.item_id=? and a.item_grcd=0 and a.shop_id = b.shop_id";
+			var sql = "select a.item_id, a.item_name, a.item_grcd, a.color_name as item_color, a.item_content, a.item_cnt, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.size_name as item_size, a.size_id as item_sizeid, b.shop_id, b.shop_name, b.shop_addr as shop_address, b.shop_tel, b.shop_tel_hm, b.shop_ceo from TBITM as a, TBSHP as b where a.item_id=? and a.item_grcd=0 and a.shop_id = b.shop_id";
 			conn.query(sql, item_id, function(err, rows){
 				if(err) throw err;
 				logger.debug(rows);
@@ -98,7 +98,7 @@ function getItemInfo(row, item_id, callback){
 				logger.debug('getItemInfo >>>>> 그룹 상품인 경우 >>>>> 그룹가져오기');
 				pool.getConnection(function(err, conn){
 					if(err) throw err;
-					var sql = "select a.item_id, a.item_name, a.item_grcd, a.color_name as item_color, a.item_content, a.item_cnt, a.item_price, a.item_saleprice, ((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.size_name as item_size, a.size_id as item_sizeid, b.shop_id, b.shop_name, b.shop_addr as shop_address, b.shop_tel, b.shop_tel_hm, b.shop_ceo from TBITM as a, TBSHP as b where a.item_id=? and a.item_grcd=1 and a.shop_id = b.shop_id";
+					var sql = "select a.item_id, a.item_name, a.item_grcd, a.color_name as item_color, a.item_content, a.item_cnt, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.size_name as item_size, a.size_id as item_sizeid, b.shop_id, b.shop_name, b.shop_addr as shop_address, b.shop_tel, b.shop_tel_hm, b.shop_ceo from TBITM as a, TBSHP as b where a.item_id=? and a.item_grcd=1 and a.shop_id = b.shop_id";
 					conn.query(sql, item_id, function(err, rows){
 						if(err) throw err;
 						logger.debug(rows);
@@ -112,7 +112,7 @@ function getItemInfo(row, item_id, callback){
 				logger.debug('getItemInfo >>>>> 그룹 상품인 경우 >>>>> 단일가져오기');
 				pool.getConnection(function(err, conn){
 					if(err) throw err;
-					var sql = "select a.item_id, a.item_name, a.item_grcd, a.color_name as item_color, a.item_content, a.item_cnt, a.item_price, a.item_saleprice, ((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.size_name as item_size, a.size_id as item_sizeid from TBITM as a where a.item_grid=? and a.item_grcd=0";
+					var sql = "select a.item_id, a.item_name, a.item_grcd, a.color_name as item_color, a.item_content, a.item_cnt, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.size_name as item_size, a.size_id as item_sizeid from TBITM as a where a.item_grid=? and a.item_grcd=0";
 					conn.query(sql, item_id, function(err, rows){
 						if(err) throw err;
 						logger.debug(rows);
