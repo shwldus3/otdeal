@@ -9,7 +9,7 @@ var db = mongoose.createConnection(uri, options);
 
 //에러 났을 때 처리하는 부분
 db.on('error', function(err){
-	if(err) console.error('db err', err);
+	if(err) throw err;
 });
 
 //정상 연결 됬을 때 처리하는 부분

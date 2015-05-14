@@ -45,33 +45,17 @@ app.use('/setting', setting);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  res.json({ success:0, msg:"[404] 해당 프로토콜을 찾을 수 없습니다."});
+  next();
 });
 
 // error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+  console.log(err);
+  res.json({ success:0, msg:"수행도중 에러가 발생했습니다.", err: err.message});
+  next();
+  // next(err);
 });
 
 
@@ -81,17 +65,5 @@ var server = http.createServer(app);
 server.listen(app.get('port'));
 console.log('서버가 '+app.get('port') + '번 포트에서 실행중입니다.');
 
-var domain = require('domain');
-app.use(function(req, res, next) {
-    var requestDomain = domain.create();
-    requestDomain.add(req);
-    requestDomain.add(res);
-    requestDomain.on('error', function(err, res){
-      next(err);
-    });
-    requestDomain.run(function(res){
-      next();
-    });
-});
 
 module.exports = app;

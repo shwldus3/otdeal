@@ -6,6 +6,8 @@ var db_item = require('../models/db_item');
 var db = require('../models/db_config_mongo');
 require('../models/clickmodel');
 var ClickModel = db.model('Click');
+var domain = require('domain');
+var d = domain.create();
 
 
 /*
@@ -22,7 +24,7 @@ router.post('/click', function(req, res, next){
 		item_id : item_id
 	});
 	click.save(function(err, result){
-		if(err) logger.error('err', err);
+		if(err) throw err;
 		var outputData = {
 			'click_id' : result.click_id,
 			'user_id' : result.user_id,
@@ -46,6 +48,7 @@ router.post('/', function(req, res, next) {
 	var item_id = req.body.item_id;
 	logger.debug(item_id);
 	db_item.itemDetail(item_id, function(err, outputData){
+		if(err) throw err;
 		if(outputData){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:outputData });
 		}else{
