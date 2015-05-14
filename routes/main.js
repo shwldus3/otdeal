@@ -48,6 +48,7 @@ router.post('/userinfo', function(req, res, next) {
 	var user_gender = req.body.user_gender;
 	var user_age = req.body.user_age;
 	var size_id = req.body.size_id;
+	var nickname = req.body.nickname;
 	var user_id = '';
 
 	var itemArr = [item_id1, item_id2, item_id3];
@@ -92,7 +93,7 @@ router.post('/userinfo', function(req, res, next) {
 				user_id = randomValueBase64(6);  // value 'jWHSOz'
 				console.log('user_id_else', user_id);
 
-				var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id];
+				var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id, nickname];
 				infoInsert(user_id, dataArr, callback);
 			}
 			callback(null, user_id);

@@ -145,7 +145,7 @@ exports.infoInsert = function(dataArr, callback){
 	console.log('dataArr', dataArr);
 	pool.getConnection(function(err, conn){
 		if(err) throw err;
-		var sql = 'insert into TBUSR (tel_uuid, user_id, user_gender, user_age, size_id) values(?, ?, ?, ?, ?)';
+		var sql = 'insert into TBUSR (tel_uuid, user_id, user_gender, user_age, size_id, nickname) values(?, ?, ?, ?, ?, ?)';
 		conn.query(sql, dataArr, function(err, row){
 			if(err) throw err;
 			console.log('row', row);
