@@ -422,7 +422,7 @@ router.get('/category', function(req, res, next) {
 url : /main/recent
  */
 router.post('/recent', function(req, res, next) {
-	var user_id = req.session.user_id;
+	var user_id = req.body.user_id;
 
 	ClickModel.find({user_id:user_id},{item_id:1}).sort({regtime:-1}).limit(10).exec(function(err, docs){
 		if(err) throw err;
