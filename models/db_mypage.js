@@ -15,7 +15,7 @@ exports.userInfoList = function(user_id, callback){
     var sql = 'select user_id, size_id, user_age, user_gender, nickname from TBUSR where user_id=?';
 
     conn.query(sql, user_id, function(err, rows){
-      if(err) throw
+      if(err) throw err;
       console.log('rows', rows);
       conn.release();
       callback(rows);
@@ -25,7 +25,7 @@ exports.userInfoList = function(user_id, callback){
 
 exports.usrInfoUpdate = function(dataArr, callback){
   pool.getConnection(function(err, conn){
-    if(err) throw
+    if(err) throw err;
     var sql = "update TBUSR set size_id=?, user_age=?, user_gender=?, nickname=? where user_id = ?";
     conn.query(sql, dataArr, function(err, row){
       if(err) throw err;
@@ -46,7 +46,7 @@ exports.bsklist = function(user_id, callback){
     var sql = "select bsk.bsk_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name from TBBSK bsk ,TBITM itm, TBSZ sz where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id;";
 
     conn.query(sql, user_id, function(err, rows){
-      if(err) throw
+      if(err) throw err;
       console.log('rows', rows);
       conn.release();
       callback(rows);
@@ -63,7 +63,7 @@ exports.bskupdate = function(dataArr, done){
         findItmid(dataArr, callback);
       },
       function(dataArr, row, callback){
-        update_bsk(dataArr, row, callback)
+        update_bsk(dataArr, row, callback);
       }
     ],
     function(err, success){
@@ -117,7 +117,7 @@ exports.like = function(user_id, callback){
     if(err) throw err;
     var sql = 'select itm.item_name, itm.item_price, itm.item_saleprice, img.path, img.img_name, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as discount_rate from TBLK lk, TBITM itm, itemImg img where lk.user_id= ? and lk.item_id = itm.item_id and lk.item_id = img.item_id';
     conn.query(sql, user_id, function(err, rows){
-      if(err) throw
+      if(err) throw err;
       console.log('rows', rows);
       //이미지 width, height 가져오기
       fileutil.getFileInfo(rows, function(err, rows){
