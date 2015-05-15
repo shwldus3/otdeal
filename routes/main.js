@@ -9,6 +9,30 @@ var db = require('../models/db_config_mongo');
 require('../models/clickmodel');
 var ClickModel = db.model('Click');
 
+router.post('/findUUID', function(req, res, next) {
+	var tel_uuid = req.body.tel_uuid;
+
+	console.log('tel_uuid', tel_uuid);
+
+	db_main.findUUID(tel_uuid, function(row){
+		console.log('row', row);
+		if(row.length!=0){ // 기존에 저장된 uuid가 있으면
+			console.log('if');
+			user_id = row[0].user_id;
+			console.log('row[0].user_id', row[0].user_id);
+			console.log('user_id_if', user_id);
+
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
+
+		} else { // 기존에 저장된 uuid가 없으면
+			console.log('else');
+			res.json({ success:0, msg:"저장된 uuid가 없습니다." });
+		}
+		// callback(null, user_id);
+	});
+});
+
+
 /*
 업무명 : 초기 이미지 선택 리스트
 전송방식 : get
@@ -53,78 +77,49 @@ router.post('/userinfo', function(req, res, next) {
 
 	var itemArr = [item_id1, item_id2, item_id3];
 
-	async.waterfall([
-		function(callback){
-			findUUID(tel_uuid, callback);
+	// async.waterfall([
+	// 	function(callback){
+	// 		findUUID(tel_uuid, callback);
+	// 	}
+	// ], function(err, result){
+	// 	if(err) throw err;
+	// 	console.log('result', result);
+	// });
+
+	// user_id를 난수 6자리로 생성.
+	function randomValueBase64 (len) {
+	  return crypto.randomBytes(Math.ceil(len * 3 / 4))
+	    .toString('base64')   // convert to base64 format
+	    .slice(0, len)        // return required number of characters
+	    .replace(/\+/g, '0')  // replace '+' with '0'
+	    .replace(/\//g, '0'); // replace '/' with '0'
+	}
+	user_id = randomValueBase64(6);  // value 'jWHSOz'
+	console.log('user_id', user_id);
+	var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id, nickname];
+
+	console.log('dataArr', dataArr);
+
+ // 클릭정보 몽고디비에 저장.
+ 	for(i=0; i<3; i++){
+ 		var click = new ClickModel({
+ 			item_id : itemArr[i],
+ 			user_id : user_id
+ 		});
+ 		click.save(function(err, doc){
+ 			if(err) throw err;
+	 		// console.log('doc', doc);
+		});
+ 	}; //for
+
+	db_main.infoInsert(dataArr, function(success){
+		console.log('dataArr_db_infoInsert', dataArr);
+		if(success){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 		}
-	], function(err, result){
-		if(err) throw err;
-		console.log('result', result);
 	});
-
-
-	function findUUID(tel_uuid, callback){
-		console.log('tel_uuid', tel_uuid);
-		db_main.findUUID(tel_uuid, function(row){
-			console.log('row', row);
-			if(row.length!=0){ // 기존에 저장된 uuid가 있으면
-				console.log('if');
-				user_id = row[0].user_id;
-				// console.log('row[0].user_id', row[0].user_id);
-				console.log('user_id_if', user_id);
-
-				console.log('dataArr_if', dataArr);
-
-				if(user_id){
-					res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
-				}else{
-					res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-				}
-			} else { // 기존에 저장된 uuid가 없으면
-				console.log('else');
-				// user_id를 난수 6자리로 생성.
-				function randomValueBase64 (len) {
-				  return crypto.randomBytes(Math.ceil(len * 3 / 4))
-				    .toString('base64')   // convert to base64 format
-				    .slice(0, len)        // return required number of characters
-				    .replace(/\+/g, '0')  // replace '+' with '0'
-				    .replace(/\//g, '0'); // replace '/' with '0'
-				}
-				user_id = randomValueBase64(6);  // value 'jWHSOz'
-				console.log('user_id_else', user_id);
-
-				var dataArr = [tel_uuid, user_id, user_gender, user_age, size_id, nickname];
-				infoInsert(user_id, dataArr, callback);
-			}
-			callback(null, user_id);
-		});
-	}
-
-	function infoInsert(user_id, dataArr, callback){
-		console.log('user_id_함수', user_id);
-		console.log('dataArr_함수', dataArr);
-	 	for(i=0; i<3; i++){
-	 		var click = new ClickModel({
-	 			item_id : itemArr[i],
-	 			user_id : user_id
-	 		});
-	 		click.save(function(err, doc){
-	 			if(err) throw err;
-		 		// console.log('doc', doc);
-			});
-	 	}; //for
-
-		db_main.infoInsert(dataArr, function(success){
-			console.log('dataArr_db_infoInsert', dataArr);
-			if(success){
-				res.json({ success:1, msg:"성공적으로 수행되었습니다.", result: user_id });
-				callback(null, user_id);
-			}else{
-				res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-				callback(null);
-			}
-		});
-	}
 });
 
 

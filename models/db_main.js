@@ -9,114 +9,6 @@ var async = require('async');
 var fileutil = require('../utils/fileutil.js');
 
 /**
- * 업무명 : 초기 이미지 선택 리스트
- * @param  {Function} callback
- * @return {[object]}            [랜덤 아이템이미지 배열]
- */
-exports.cuList = function(callback){
-	pool.getConnection(function(err, conn){
-		if(err) throw err;
-
-		async.waterfall([
-			function(callback){
-				getRNumArr(callback);
-			},
-			function(rNumArr, callback){
-				getItemImg(rNumArr, callback);
-			}
-		],
-		function(err, result){
-			if(err) throw err;
-			console.log('result', result);
-			conn.release();
-			callback(result);
-		});
-
-		function getRNumArr(callback){
-			var sql = 'select count(*) as num from itemImg';
-			conn.query(sql, function(err, row){
-				if(err) throw err;
-				var rNum;
-				var rNumArr = [];
-
-				// while문 12번 돌리기
-				async.whilst(
-			    function () {
-			    	// console.log('rNumArr.length', rNumArr.length);
-			    	return rNumArr.length < 12;
-			    },
-			    function (callback) {
-		        // setTimeout(callback, 1000);
-		        var i = 0;
-		        async.waterfall([
-		        	function(callback){
-		        		(function(i){
-		        			process.nextTick(function(){
-		        				var num = (row[0].num)-1;
-		        				// console.log('num', num);
-		        				rNum = Math.floor((Math.random() * num) + 1);
-		        				// console.log('rNum', rNum);
-		        				callback(null, rNum);
-		        			});
-		        		})(i);
-		        		i = i + 1;
-		        	},
-		        	function(rNum, callback){
-		        		// console.log('rNum', rNum);
-		        		var check = rNumArr.indexOf(rNum);
-		        		// console.log('check', check);
-		        		if(check==-1){
-		        			rNumArr.push(rNum);
-		        			callback(null, rNumArr);
-		        		} else {
-		        			callback(null);
-		        		}
-		        	}
-		        ], function(err, result){
-		        	// console.log('rNumArr',rNumArr);
-		        	callback();
-		        });
-			    },
-			    function (err) {
-			        if(err) throw err;
-			        // console.log('rNumArr',rNumArr);
-			        callback(null, rNumArr);
-			        // console.log('rNumArr.length', rNumArr.length);
-			    }
-				);
-			});
-		} // getRNumArr
-
-		function getItemImg(rNumArr, callback){
-			var itemimgArr = [];
-			async.each(rNumArr, function(limit, callback){
-				var sql = 'select * from itemImg order by item_id asc limit ?,1';
-				conn.query(sql, limit, function(err, rows){
-					// console.log('rows', rows);
-					if(err) throw err;
-					itemimgArr.push(rows[0]);
-					// console.log('itemimgArr',itemimgArr);
-					callback(null, itemimgArr);
-				});
-			}, function(err){
-				if(err) throw err;
-				if(itemimgArr){
-					//이미지 width, height 가져오기
-					fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
-						// if(err) throw err;
-						callback(null, itemimgArr);
-					});
-					// callback(null, itemimgArr);
-				} else {
-					callback(null, false);
-				}
-			});
-		} // getItemImg
-
-	});
-};
-
-/**
  * 업무명 : UUID 찾기
  * @param  {[string]}   tel_uuid [사용자UUID]
  * @param  {Function} callback
@@ -132,6 +24,115 @@ exports.cuList = function(callback){
  			conn.release();
  			callback(row);
  		});
+ 	});
+ };
+
+
+ /**
+  * 업무명 : 초기 이미지 선택 리스트
+  * @param  {Function} callback
+  * @return {[object]}            [랜덤 아이템이미지 배열]
+  */
+ exports.cuList = function(callback){
+ 	pool.getConnection(function(err, conn){
+ 		if(err) throw err;
+
+ 		async.waterfall([
+ 			function(callback){
+ 				getRNumArr(callback);
+ 			},
+ 			function(rNumArr, callback){
+ 				getItemImg(rNumArr, callback);
+ 			}
+ 		],
+ 		function(err, result){
+ 			if(err) throw err;
+ 			console.log('result', result);
+ 			conn.release();
+ 			callback(result);
+ 		});
+
+ 		function getRNumArr(callback){
+ 			var sql = 'select count(*) as num from itemImg';
+ 			conn.query(sql, function(err, row){
+ 				if(err) throw err;
+ 				var rNum;
+ 				var rNumArr = [];
+
+ 				// while문 12번 돌리기
+ 				async.whilst(
+ 			    function () {
+ 			    	// console.log('rNumArr.length', rNumArr.length);
+ 			    	return rNumArr.length < 12;
+ 			    },
+ 			    function (callback) {
+ 		        // setTimeout(callback, 1000);
+ 		        var i = 0;
+ 		        async.waterfall([
+ 		        	function(callback){
+ 		        		(function(i){
+ 		        			process.nextTick(function(){
+ 		        				var num = (row[0].num)-1;
+ 		        				// console.log('num', num);
+ 		        				rNum = Math.floor((Math.random() * num) + 1);
+ 		        				// console.log('rNum', rNum);
+ 		        				callback(null, rNum);
+ 		        			});
+ 		        		})(i);
+ 		        		i = i + 1;
+ 		        	},
+ 		        	function(rNum, callback){
+ 		        		// console.log('rNum', rNum);
+ 		        		var check = rNumArr.indexOf(rNum);
+ 		        		// console.log('check', check);
+ 		        		if(check==-1){
+ 		        			rNumArr.push(rNum);
+ 		        			callback(null, rNumArr);
+ 		        		} else {
+ 		        			callback(null);
+ 		        		}
+ 		        	}
+ 		        ], function(err, result){
+ 		        	// console.log('rNumArr',rNumArr);
+ 		        	callback();
+ 		        });
+ 			    },
+ 			    function (err) {
+ 			        if(err) throw err;
+ 			        // console.log('rNumArr',rNumArr);
+ 			        callback(null, rNumArr);
+ 			        // console.log('rNumArr.length', rNumArr.length);
+ 			    }
+ 				);
+ 			});
+ 		} // getRNumArr
+
+ 		function getItemImg(rNumArr, callback){
+ 			var itemimgArr = [];
+ 			async.each(rNumArr, function(limit, callback){
+ 				var sql = 'select * from itemImg order by item_id asc limit ?,1';
+ 				conn.query(sql, limit, function(err, rows){
+ 					// console.log('rows', rows);
+ 					if(err) throw err;
+ 					itemimgArr.push(rows[0]);
+ 					// console.log('itemimgArr',itemimgArr);
+ 					callback(null, itemimgArr);
+ 				});
+ 			}, function(err){
+ 				if(err) throw err;
+ 				if(itemimgArr){
+ 					//이미지 width, height 가져오기
+ 					fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
+ 						// if(err) throw err;
+ 						callback(null, itemimgArr);
+ 					});
+ 					// callback(null, itemimgArr);
+ 				} else {
+ 					callback(null, false);
+ 				}
+ 			});
+ 		} // getItemImg
+
  	});
  };
 
@@ -158,7 +159,6 @@ exports.infoInsert = function(dataArr, callback){
 		});
 	});
 };
-
 /**
  * 업무명 : 좋아요 등록
  * @param  {[array]}   datas	[inputData : user_id, item_id]
