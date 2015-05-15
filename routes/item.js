@@ -3,7 +3,6 @@ var router = express.Router();
 var logger = require('./static/logger.js');
 var db_item = require('../models/db_item');
 
-sdf
 var db = require('../models/db_config_mongo');
 require('../models/clickmodel');
 var ClickModel = db.model('Click');
