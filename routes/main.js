@@ -466,7 +466,7 @@ router.post('/qna', function(req, res, next) {
 전송방식 : post
 url : /main/qna
  */
-router.post('/qna', function(req, res, next) {
+router.post('/qnaInsert', function(req, res, next) {
 	var shop_id = req.body.shop_id;
 	var item_id = req.body.item_id;
 	var user_id = req.body.user_id;
