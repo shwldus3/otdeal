@@ -11,8 +11,6 @@ var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
 var fileutil = require('../utils/fileutil.js');
 
-
-
 /**
  * 업무명 : 상품상세
  * @param  {[int]}   item_id
@@ -145,10 +143,11 @@ function getImgInfo(item_id, callback){
 			conn.release();
 
 			//이미지 width, height 가져오기
-			fileutil.getFileInfo(rows, function(err, imagerows){
-				if(err) throw err;
-				callback(null, imagerows);
-			});
+			// fileutil.getFileInfo(rows, function(err, imagerows){
+				// if(err) throw err;
+				// callback(null, imagerows);
+			// });
+		callback(null,rows);
 		});
 	});
 }
