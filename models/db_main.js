@@ -122,11 +122,11 @@ var fileutil = require('../utils/fileutil.js');
  				if(err) throw err;
  				if(itemimgArr){
  					//이미지 width, height 가져오기
- 					// fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
- 					// 	// if(err) throw err;
- 					// 	callback(null, itemimgArr);
- 					// });
- 					callback(null, itemimgArr);
+ 					fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
+ 						// if(err) throw err;
+ 						callback(null, itemimgArr);
+ 					});
+ 					// callback(null, itemimgArr);
  				} else {
  					callback(null, false);
  				}
@@ -159,6 +159,323 @@ exports.infoInsert = function(dataArr, callback){
 		});
 	});
 };
+
+
+/**
+ * 업무명 : 추천아이템 메인리스트
+ * @param  {[type]}   data     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+exports.recmd_item = function(user_id, callback){
+	pool.getConnection(function(err, conn){
+		if(err) throw err;
+
+		async.waterfall([
+ 			function(callback){
+ 				getItemInfo(callback);
+ 			},
+ 			function(itemInfoRows, callback){
+ 				getLikeYn(itemInfoRows, callback);
+ 			}
+ 		],
+ 		function(err, result){
+ 			if(err) throw err;
+ 			console.log('result', result);
+ 			conn.release();
+ 			callback(result);
+ 		});
+
+
+ 		function getItemInfo(callback){
+ 			var sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' order by launch_date desc limit 1, 20";
+			conn.query(sql, user_id, function(err, itemInfoRows){
+				if(err) throw err;
+				// console.log('itemInfoRows', itemInfoRows);
+				if(itemInfoRows){
+					callback(null, itemInfoRows);
+				}else{
+					callback(null);
+				}
+			});
+ 		}
+
+
+ 		function getLikeYn(itemInfoRows, callback){
+ 			async.each(itemInfoRows, function(itemInfoRow, callback){
+				// logger.debug('item_id', itemInfoRow.item_id);
+				var inputArr = [itemInfoRow.item_id, user_id];
+				var item_like_yn = '';
+				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
+				conn.query(sql, inputArr, function(err, row){
+					if(err) throw err;
+					// logger.debug('row', row);
+					if(row[0]) {
+						item_like_yn = 'Y';
+					}else{
+						item_like_yn = 'N';
+					}
+					// logger.debug('item_like_yn', item_like_yn);
+					itemInfoRow.item_like_yn = item_like_yn;
+					// logger.debug('row',itemInfoRow);
+					callback(null);
+				});
+			}, function(err){
+				if(err) throw err;
+				if(itemInfoRows){
+					// logger.debug(itemInfoRows);
+					callback(null, itemInfoRows);
+				} else {
+					callback(null, false);
+				}
+			});
+ 		};
+	});
+};
+
+
+/**
+ * 업무명 : 세상에단하나 아이템리스트
+ * @param  {[type]}   data     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+exports.recmd_oneforyou = function(user_id, callback){
+	pool.getConnection(function(err, conn){
+		if(err) throw err;
+
+		async.waterfall([
+ 			function(callback){
+ 				getItemInfo(callback);
+ 			},
+ 			function(itemInfoRows, callback){
+ 				getLikeYn(itemInfoRows, callback);
+ 			}
+ 		],
+ 		function(err, result){
+ 			if(err) throw err;
+ 			console.log('result', result);
+ 			conn.release();
+ 			callback(result);
+ 		});
+
+
+ 		function getItemInfo(callback){
+ 			var sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.item_cnt, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.item_cnt='1' order by launch_date desc limit 1, 20";
+			conn.query(sql, user_id, function(err, itemInfoRows){
+				if(err) throw err;
+				// console.log('itemInfoRows', itemInfoRows);
+				if(itemInfoRows){
+					callback(null, itemInfoRows);
+				}else{
+					callback(null);
+				}
+			});
+ 		}
+
+
+ 		function getLikeYn(itemInfoRows, callback){
+ 			async.each(itemInfoRows, function(itemInfoRow, callback){
+				// logger.debug('item_id', itemInfoRow.item_id);
+				var inputArr = [itemInfoRow.item_id, user_id];
+				var item_like_yn = '';
+				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
+				conn.query(sql, inputArr, function(err, row){
+					if(err) throw err;
+					// logger.debug('row', row);
+					if(row[0]) {
+						item_like_yn = 'Y';
+					}else{
+						item_like_yn = 'N';
+					}
+					// logger.debug('item_like_yn', item_like_yn);
+					itemInfoRow.item_like_yn = item_like_yn;
+					// logger.debug('row',itemInfoRow);
+					callback(null);
+				});
+			}, function(err){
+				if(err) throw err;
+				if(itemInfoRows){
+					// logger.debug(itemInfoRows);
+					callback(null, itemInfoRows);
+				} else {
+					callback(null, false);
+				}
+			});
+ 		};
+	});
+};
+
+
+
+/**
+ * 업무명 : 좋아요 랭킹리스트
+ * @param  {[type]}   data     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+exports.recmd_like = function(user_id, callback){
+	pool.getConnection(function(err, conn){
+		if(err) throw err;
+
+		async.waterfall([
+ 			function(callback){
+ 				getItemInfo(callback);
+ 			},
+ 			function(itemInfoRows, callback){
+ 				getLikeYn(itemInfoRows, callback);
+ 			}
+ 		],
+ 		function(err, result){
+ 			if(err) throw err;
+ 			console.log('result', result);
+ 			conn.release();
+ 			callback(result);
+ 		});
+
+
+ 		function getItemInfo(callback){
+ 			var sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.item_cnt='1' order by launch_date desc limit 1, 20";
+			conn.query(sql, user_id, function(err, itemInfoRows){
+				if(err) throw err;
+				// console.log('itemInfoRows', itemInfoRows);
+				if(itemInfoRows){
+					callback(null, itemInfoRows);
+				}else{
+					callback(null);
+				}
+			});
+ 		}
+
+
+ 		function getLikeYn(itemInfoRows, callback){
+ 			async.each(itemInfoRows, function(itemInfoRow, callback){
+				// logger.debug('item_id', itemInfoRow.item_id);
+				var inputArr = [itemInfoRow.item_id, user_id];
+				var item_like_yn = '';
+				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
+				conn.query(sql, inputArr, function(err, row){
+					if(err) throw err;
+					// logger.debug('row', row);
+					if(row[0]) {
+						item_like_yn = 'Y';
+					}else{
+						item_like_yn = 'N';
+					}
+					// logger.debug('item_like_yn', item_like_yn);
+					itemInfoRow.item_like_yn = item_like_yn;
+					// logger.debug('row',itemInfoRow);
+					callback(null);
+				});
+			}, function(err){
+				if(err) throw err;
+				if(itemInfoRows){
+					// logger.debug(itemInfoRows);
+					callback(null, itemInfoRows);
+				} else {
+					callback(null, false);
+				}
+			});
+ 		};
+	});
+};
+
+
+
+/**
+ * 업무명 : 카테고리 정렬
+ * @param  {[type]}   data     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+exports.category = function(inputData, callback){
+	pool.getConnection(function(err, conn){
+		if(err) throw err;
+		var user_id = inputData.user_id;
+		var sort_gubun = inputData.sort_gubun;
+		var ctg_id = inputData.ctg_id;
+		logger.debug(sort_gubun);
+
+		async.waterfall([
+ 			function(callback){
+ 				getItemInfo(callback);
+ 			},
+ 			function(itemInfoRows, callback){
+ 				getLikeYn(itemInfoRows, callback);
+ 			}
+ 		],
+ 		function(err, result){
+ 			if(err) throw err;
+ 			console.log('result', result);
+ 			conn.release();
+ 			callback(result);
+ 		});
+
+
+ 		function getItemInfo(callback){
+ 			var sql = "";
+ 			switch(sort_gubun){
+ 				case '0': //최신순
+ 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by launch_date desc limit 1, 20";
+ 					break;
+ 				case '1': //높은 가격순
+ 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice desc limit 1, 20";
+ 					break;
+ 				case '2': //낮은 가격순
+ 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice asc limit 1, 20";
+ 					break;
+ 				case '3': //할인율순
+ 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_sale desc limit 1, 20";
+ 					break;
+ 				default:
+ 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by launch_date desc limit 1, 20";
+ 			}
+
+			conn.query(sql, ctg_id, function(err, itemInfoRows){
+				if(err) throw err;
+				// console.log('itemInfoRows', itemInfoRows);
+				if(itemInfoRows){
+					callback(null, itemInfoRows);
+				}else{
+					callback(null);
+				}
+			});
+ 		}
+
+
+ 		function getLikeYn(itemInfoRows, callback){
+ 			async.each(itemInfoRows, function(itemInfoRow, callback){
+				// logger.debug('item_id', itemInfoRow.item_id);
+				var inputArr = [itemInfoRow.item_id, user_id];
+				var item_like_yn = '';
+				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
+				conn.query(sql, inputArr, function(err, row){
+					if(err) throw err;
+					// logger.debug('row', row);
+					if(row[0]) {
+						item_like_yn = 'Y';
+					}else{
+						item_like_yn = 'N';
+					}
+					// logger.debug('item_like_yn', item_like_yn);
+					itemInfoRow.item_like_yn = item_like_yn;
+					// logger.debug('row',itemInfoRow);
+					callback(null);
+				});
+			}, function(err){
+				if(err) throw err;
+				if(itemInfoRows){
+					// logger.debug(itemInfoRows);
+					callback(null, itemInfoRows);
+				} else {
+					callback(null, false);
+				}
+			});
+ 		};
+	});
+};
+
+
 /**
  * 업무명 : 좋아요 등록
  * @param  {[array]}   datas	[inputData : user_id, item_id]

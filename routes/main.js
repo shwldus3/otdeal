@@ -77,6 +77,15 @@ router.post('/userinfo', function(req, res, next) {
 
 	var itemArr = [item_id1, item_id2, item_id3];
 
+	// async.waterfall([
+	// 	function(callback){
+	// 		findUUID(tel_uuid, callback);
+	// 	}
+	// ], function(err, result){
+	// 	if(err) throw err;
+	// 	console.log('result', result);
+	// });
+
 	// user_id를 난수 6자리로 생성.
 	function randomValueBase64 (len) {
 	  return crypto.randomBytes(Math.ceil(len * 3 / 4))
@@ -116,217 +125,55 @@ router.post('/userinfo', function(req, res, next) {
 
 /*
 업무명 : 상품추천리스트
-전송방식 : get
+전송방식 : post
 url : /main/recmd/item
  */
-router.get('/recmd/item', function(req, res, next) {
-	var user_id = "";
-	var result = {
-		"itemArr" : [{
-			"item_seq" : 1,
-			"item_id" : 1,
-			"item_name" : "원피스단일상품",
-			"item_price" : 30000,
-			"item_saleprice" : 15000,
-			"item_sale" : "50%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "4",
-				"path" : "/item/thumbnail",
-				"img_name" : "img4.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 2,
-			"item_id" : 2,
-			"item_name" : "바지그룹상품",
-			"item_price" : 55000,
-			"item_saleprice" : 45000,
-			"item_sale" : "19%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "N",
-			"imgObj" : {
-				"img_id" : "9",
-				"path" : "/item/thumbnail",
-				"img_name" : "img9.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 3,
-			"item_id" : 3,
-			"item_name" : "아우터",
-			"item_price" : 100000,
-			"item_saleprice" : 85000,
-			"item_sale" : "15%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "10",
-				"path" : "/item/thumbnail",
-				"img_name" : "img10.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}]
-	};
-	if(result){
+router.post('/recmd/item', function(req, res, next) {
+	var user_id = req.body.user_id;
+
+	db_main.recmd_item(user_id, function(result){
+		if(result){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-	}else{
-		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-	}
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 });
 
 
 /*
 업무명 : 수량1개추천리스트
-전송방식 : get
-url : /main/recmd/oneforyou
+전송방식 : post
+url : /main/recmd/item
  */
-router.get('/recmd/oneforyou', function(req, res, next) {
-	var user_id = "";
-	var result = {
-		"itemArr" : [{
-			"item_seq" : 1,
-			"item_id" : 1,
-			"item_name" : "원피스단일상품",
-			"item_price" : 30000,
-			"item_saleprice" : 15000,
-			"item_sale" : "50%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "4",
-				"path" : "/item/thumbnail",
-				"img_name" : "img4.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 2,
-			"item_id" : 2,
-			"item_name" : "바지그룹상품",
-			"item_price" : 55000,
-			"item_saleprice" : 45000,
-			"item_sale" : "19%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "N",
-			"imgObj" : {
-				"img_id" : "9",
-				"path" : "/item/thumbnail",
-				"img_name" : "img9.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 3,
-			"item_id" : 3,
-			"item_name" : "아우터",
-			"item_price" : 100000,
-			"item_saleprice" : 85000,
-			"item_sale" : "15%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "10",
-				"path" : "/item/thumbnail",
-				"img_name" : "img10.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}]
-	};
-	if(result){
+router.post('/recmd/oneforyou', function(req, res, next) {
+	var user_id = req.body.user_id;
+
+	db_main.recmd_oneforyou(user_id, function(result){
+		if(result){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-	}else{
-		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-	}
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 });
 
 
 /*
 업무명 : 좋아요랭킹리스트
 전송방식 : get
-url : /main/recmd/like
+url : /main/recmd/item
  */
-router.get('/recmd/like', function(req, res, next) {
-	var user_id = "";
-	var result = {
-		"itemArr" : [{
-			"item_seq" : 1,
-			"item_id" : 1,
-			"item_name" : "원피스단일상품",
-			"item_price" : 30000,
-			"item_saleprice" : 15000,
-			"item_sale" : "50%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : 4,
-				"path" : "/item/thumbnail",
-				"img_name" : "img4.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 2,
-			"item_id" : 2,
-			"item_name" : "바지그룹상품",
-			"item_price" : 55000,
-			"item_saleprice" : 45000,
-			"item_sale" : "19%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "N",
-			"imgObj" : {
-				"img_id" : 9,
-				"path" : "/item/thumbnail",
-				"img_name" : "img9.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 3,
-			"item_id" : 3,
-			"item_name" : "아우터",
-			"item_price" : 100000,
-			"item_saleprice" : 85000,
-			"item_sale" : "15%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : 10,
-				"path" : "/item/thumbnail",
-				"img_name" : "img10.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}]
-	};
-	if(result){
+router.post('/recmd/like', function(req, res, next) {
+	var user_id = req.body.user_id;
+
+	db_main.recmd_like(user_id, function(result){
+		if(result){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-	}else{
-		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-	}
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 });
 
 
@@ -335,71 +182,24 @@ router.get('/recmd/like', function(req, res, next) {
 전송방식 : get
 url : /main/category
  */
-router.get('/category', function(req, res, next) {
-	var user_id = "";
-	var sort_gubun = "";
-	var result = {
-		"itemArr" : [{
-			"item_seq" : 1,
-			"item_id" : 1,
-			"item_name" : "원피스단일상품",
-			"item_price" : 30000,
-			"item_saleprice" : 15000,
-			"item_sale" : "50%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "4",
-				"path" : "/item/thumbnail",
-				"img_name" : "img4.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 2,
-			"item_id" : 2,
-			"item_name" : "바지그룹상품",
-			"item_price" : 55000,
-			"item_saleprice" : 45000,
-			"item_sale" : "19%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "N",
-			"imgObj" : {
-				"img_id" : "9",
-				"path" : "/item/thumbnail",
-				"img_name" : "img9.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}, {
-			"item_seq" : 3,
-			"item_id" : 3,
-			"item_name" : "아우터",
-			"item_price" : 100000,
-			"item_saleprice" : 85000,
-			"item_sale" : "15%",
-			"launch_date" : "2015-01-01",
-			"item_regdate" : "2015-04-27",
-			"item_regtime" : "2015-04-27 14:33:30",
-			"item_like_yn" : "Y",
-			"imgObj" : {
-				"img_id" : "10",
-				"path" : "/item/thumbnail",
-				"img_name" : "img10.jpg",
-				"img_width" : 300,
-				"img_height" : 400
-			}
-		}]
+router.post('/category', function(req, res, next) {
+	var user_id = req.body.user_id;
+	var sort_gubun = req.body.sort_gubun;
+	var ctg_id = req.body.ctg_id;
+
+	var inputData = {
+		user_id : user_id,
+		sort_gubun : sort_gubun,
+		ctg_id : ctg_id
 	};
-	if(result){
+
+	db_main.category(inputData, function(result){
+		if(result){
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
-	}else{
-		res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-	}
+		}else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
 });
 
 
