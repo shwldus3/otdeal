@@ -14,8 +14,9 @@ var pool = mysql.createPool(db_config);
 exports.fblogin = function(dataArr, done){
   pool.getConnection(function (err, conn) {
     if(err) throw err;
+    console.log('dataArr123', dataArr)
 
-    var sql = "insert into TBUSR (user_id, name, token, user_regdate) values(?,?,?, now())";
+    var sql = "update TBUSR set id=?, name=? where user_id=?";
     conn.query(sql, dataArr, function(err, row) {
       if (err) throw err;
       var success = false;

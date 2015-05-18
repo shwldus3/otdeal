@@ -5,41 +5,38 @@ var db_login = require('../models/db_login');
 var graph = require('fbgraph');
 var async = require('async');
 
-// json -> obj 처리 참고
-//var obj = JSON.parse(access_token);
-//console.log(obj.access_token);
-
 /*
  업무명 : 페이스북 정보 저장
  전송방식 : post
  url : /login/facebook
  */
 router.post('/facebook', function(req, res, next) {
-  // var access_token = "CAACEdEose0cBAC2qn4aEMcxozXifHYZCIFLlHWHWrgj3G9COyK0egEjvWGH32nK7vWRm751L6bZA0xQVOGwNCFYvoVZBmBxfkVBLa6Bg7OlRxgq12MfZBlxf2k70kYCMw02gGFxdZCSCq0p1pxmrsHkULT3SUQVI6ZAkItPYXtyaZAJTLiq6pxXCmnc7cL1KR2bbwBdZAIEMIWxEAB0Od5Hn";
-  var access_token = req.body.access_token;
-  var user_id = req.session.user_id;
-
+  var token = req.body.access_token;
+  var user_id = req.body.user_id;
+  var id = '';
   var name = '';
   // 액세스 토큰으로 정보 받아오기.
-  function getfbinfo(access_token, callback) {
-    graph.setAccessToken(access_token);
+  function getfbinfo(token, callback) {
+    graph.setAccessToken(token);
     graph.get("me", function (err, res) {
-      console.log(res);
+      // console.log(res);
+      id = res.id;
       name = res.name;
-      callback(null, name);
+      // var data = [id, name]
+      callback(null, id, name);
     });
   }
 
   async.waterfall([
       function(callback) {
-        getfbinfo(access_token, callback);
+        getfbinfo(token, callback);
       }
     ],
     function(err, result){
       if(err) throw err;
       console.log('result', result);
 
-      var dataArr = [user_id, name, access_token];
+      var dataArr = [id, name, user_id];
       console.log('dataArr', dataArr);
 
       db_login.fblogin(dataArr, function(success){
