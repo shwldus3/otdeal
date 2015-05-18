@@ -114,8 +114,6 @@ router.post('/order', function(req, res, next) {
 	logger.debug(user_id);
 	var datas = { 'itemArr' : itemArr, 'user_id' : user_id, 'total_price' : total_price };
 
-
-
 	db_item.order(datas, function(result){
 		logger.debug(result);
 		if(result){

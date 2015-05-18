@@ -9,6 +9,46 @@ var db = require('../models/db_config_mongo');
 require('../models/clickmodel');
 var ClickModel = db.model('Click');
 
+router.get('/recmd/item', function(req, res, next){
+	var user_id = req.session.user_id;
+
+	// 유저가 선택한 item들 찾아서 배열에 넣기
+	ClickModel.distinct("item_id",{user_id:user_id}).exec(function(err, docs){
+		if(err) throw err;
+		console.log('user_id', user_id);
+		console.log('docs', docs);
+
+		var itemArr = [];
+		for(i=0; i<docs.length; i++){
+			itemArr.push(docs[i]);
+		}
+		console.log('itemArr', itemArr);
+
+		// user가 클릭한 총 아이템 개수 찾기.
+		ClickModel.find({user_id:user_id}).count().exec(function(err, docs){
+			if(err) throw err;
+			console.log('전체 아이템 개수', docs);
+
+			var arr = [];
+			for(i=0;i<itemArr.length;i++){
+				arr.push((itemArr[i] / docs).toFixed(2));
+			}
+			console.log('arr', arr);
+		});
+
+		if(itemArr){
+			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : itemArr});
+		} else{
+			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+		}
+	});
+});
+
+/*
+업무명 : 저장된 UUID 찾기
+전송방식 : post
+url : /main/findUUID
+ */
 router.post('/findUUID', function(req, res, next) {
 	var tel_uuid = req.body.tel_uuid;
 
@@ -76,15 +116,6 @@ router.post('/userinfo', function(req, res, next) {
 	var user_id = '';
 
 	var itemArr = [item_id1, item_id2, item_id3];
-
-	// async.waterfall([
-	// 	function(callback){
-	// 		findUUID(tel_uuid, callback);
-	// 	}
-	// ], function(err, result){
-	// 	if(err) throw err;
-	// 	console.log('result', result);
-	// });
 
 	// user_id를 난수 6자리로 생성.
 	function randomValueBase64 (len) {

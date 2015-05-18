@@ -95,7 +95,7 @@ router.post('/basket', function(req, res, next) {
  url : /mypage/like
  */
 router.get('/like', function(req, res, next) {
-  var user_id = req.session.user_id;
+  var user_id = req.body.user_id;
     console.log('user_id', user_id);
     db_mypage.like(user_id, function(rows){
       console.log('rows123', rows);
