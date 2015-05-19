@@ -242,10 +242,29 @@ function setTBODR(conn, datas, order_id, callback){
  * @param {Function} callback  [boolean]
  */
 function setTBODRITM(conn, datas, order_id, callback){
-	var success;
-	async.each(datas.itemArr, function(item, callback){
-		logger.debug(datas.itemArr);
-		var inputArr = [order_id, item.item_id, item.item_cnt];
+	if(typeof datas.item_id  == "string"){
+		var inputArr = [order_id, datas.item_id, datas.item_cnt];
+		setOdrItm(inputArr);
+	}else if(typeof datas.item_id  == "array"){
+		async.each(datas.item_id, function(i, callback){
+			logger.debug(datas.item_id);
+			var inputArr = [order_id, datas.item_id[i], datas.item_cnt[i]];
+			setOdrItm(inputArr);
+		}, function(err, success){
+			// each(for) 문장 처리 후 결과 처리과정
+			if(err) throw err;
+			if(success){
+				callback(null, true);
+			}else{
+				callback(null, false);
+			}
+		});
+	}else{
+		callback(null, false);
+	}
+
+
+	function setOdrItm(inputArr){
 		var sql = "insert into TBODRITM (order_id, item_id, item_cnt) values(?, ?, ?)";
 		conn.query(sql, inputArr, function(err, row){
 			if(err) throw err;
@@ -256,13 +275,5 @@ function setTBODRITM(conn, datas, order_id, callback){
 			}
 			callback(null, success);
 		});
-	}, function(err, row){
-		// each(for) 문장 처리 후 결과 처리과정
-		if(err) throw err;
-		if(success){
-			callback(null, true);
-		}else{
-			callback(null, false);
-		}
-	});
+	}
 }
