@@ -11,6 +11,10 @@ var db_config = require('./db_config');
 var pool = mysql.createPool(db_config);
 var fileutil = require('../utils/fileutil.js');
 
+var db = require('../models/db_config_mongo');
+require('../models/clickmodel');
+var ClickModel = db.model('Click');
+
 /**
  * 업무명 : 상품상세
  * @param  {[int]}   item_id
@@ -194,12 +198,12 @@ exports.order = function(datas, callback){
 			function(callback) {
 			// TBODR에 주문정보 Insert
 				logger.debug('setTBODR 실행');
-				setTBODR(conn, datas, order_id, callback);
+				insertTBODR(conn, datas, order_id, callback);
 			},
 			function(callback) {
 			// TBODRITM에 주문 아이템 정보 Insert
 				logger.debug('setTBODRITM 실행');
-				setTBODRITM(conn, datas, order_id, callback);
+				insertTBODRITM(conn, datas, order_id, callback);
 			}
 		],
 		// 모든 자료를 한번에 모아서 받을 수 있습니다.
@@ -220,7 +224,7 @@ exports.order = function(datas, callback){
  * @param {[objects]}   [conn, datas, order_id, callback]
  * @param {Function} callback		[boolean]
  */
-function setTBODR(conn, datas, order_id, callback){
+function insertTBODR(conn, datas, order_id, callback){
 	var inputArr = [order_id, datas.user_id, datas.total_price];
 	var sql = "insert into TBODR (order_id, user_id, order_paystat, total_price, order_regdate, order_stat) values(?, ?, '0', ?, now(), '0')";
 	conn.query(sql, inputArr, function(err, row){
@@ -241,39 +245,52 @@ function setTBODR(conn, datas, order_id, callback){
  * @param {[objects]}   conn, datas, order_id, callback
  * @param {Function} callback  [boolean]
  */
-function setTBODRITM(conn, datas, order_id, callback){
+function insertTBODRITM(conn, datas, order_id, callback){
+	console.log(datas.item_id);
+	console.log(typeof datas.item_id);
+	var i = 0;
+	var success = '';
 	if(typeof datas.item_id  == "string"){
 		var inputArr = [order_id, datas.item_id, datas.item_cnt];
-		setOdrItm(inputArr);
-	}else if(typeof datas.item_id  == "array"){
-		async.each(datas.item_id, function(i, callback){
-			logger.debug(datas.item_id);
-			var inputArr = [order_id, datas.item_id[i], datas.item_cnt[i]];
-			setOdrItm(inputArr);
-		}, function(err, success){
+		insertOdrItm(inputArr);
+		var click = new ClickModel({
+			user_id : datas.user_id,
+			item_id : datas.item_id,
+			gubun : 'order'
+		});
+		click.save(function(err, result){
+			if(err) throw err;
+		});
+		callback(null, true);
+	}else if((datas.item_id).constructor == Array){
+		async.each(datas.item_id, function(item_id, callback){
+			logger.debug(i);
+			var inputArr = [order_id, item_id, datas.item_cnt[i]];
+			insertOdrItm(inputArr);
+			i++;
+			var click = new ClickModel({
+				user_id : datas.user_id,
+				item_id : item_id,
+				gubun : 'order'
+			});
+			click.save(function(err, result){
+				if(err) throw err;
+			});
+			callback(null);
+		}, function(err){
 			// each(for) 문장 처리 후 결과 처리과정
 			if(err) throw err;
-			if(success){
-				callback(null, true);
-			}else{
-				callback(null, false);
-			}
+			callback(null, true);
 		});
 	}else{
 		callback(null, false);
 	}
 
 
-	function setOdrItm(inputArr){
+	function insertOdrItm(inputArr){
 		var sql = "insert into TBODRITM (order_id, item_id, item_cnt) values(?, ?, ?)";
 		conn.query(sql, inputArr, function(err, row){
 			if(err) throw err;
-			if(row.affectedRows == 1){
-				success = true;
-			}else{
-				success = false;
-			}
-			callback(null, success);
 		});
 	}
 }

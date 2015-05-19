@@ -114,14 +114,6 @@ router.post('/order', function(req, res, next) {
 	db_item.order(datas, function(result){
 		logger.debug(result);
 		if(result){
-			var click = new ClickModel({
-				user_id : user_id,
-				item_id : item_id,
-				gubun : 'order'
-			});
-			click.save(function(err, result){
-				if(err) throw err;
-			});
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:result });
 		}else{
 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
