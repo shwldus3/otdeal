@@ -21,8 +21,7 @@ router.post('/click', function(req, res, next){
 
 	var click = new ClickModel({
 		user_id : user_id,
-		item_id : item_id,
-		gubun : 'click'
+		item_id : item_id
 	});
 	click.save(function(err, result){
 		if(err) throw err;
@@ -54,8 +53,7 @@ router.post('/', function(req, res, next) {
 		if(outputData){
 			var click = new ClickModel({
 				user_id : user_id,
-				item_id : item_id,
-				gubun : 'click'
+				item_id : item_id
 			});
 			click.save(function(err, result){
 				if(err) throw err;
@@ -83,8 +81,7 @@ router.post('/bsk', function(req, res, next) {
 		if(result){
 			var click = new ClickModel({
 				user_id : user_id,
-				item_id : item_id,
-				gubun : 'basket'
+				item_id : item_id
 			});
 			click.save(function(err, result){
 				if(err) throw err;

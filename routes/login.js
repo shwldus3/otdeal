@@ -11,7 +11,7 @@ router.post('/facebook', function(req, res, next) {
 
   // 액세스 토큰으로 정보 받아오기.
   function getfbinfo(token, callback) {
-    graph.setAccessToken(token);
+    graph.setAccessToken(token)
     graph.get("me", function (err, res) {
       // console.log(res);
       id = res.id;

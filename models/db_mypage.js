@@ -43,7 +43,7 @@ exports.usrInfoUpdate = function(dataArr, callback){
 exports.bsklist = function(user_id, callback){
   pool.getConnection(function(err, conn){
     if(err) throw err;
-    var sql = "select bsk.bsk_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_id, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name from TBBSK bsk ,TBITM itm, TBSZ sz where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id";
+    var sql = "select bsk.bsk_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_id, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name, img.path, img.img_name from TBBSK bsk ,TBITM itm, TBSZ sz, itemImg img where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id and img.item_id = itm.item_id";
 
     conn.query(sql, user_id, function(err, rows){
       if(err) throw err;
