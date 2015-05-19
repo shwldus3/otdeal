@@ -16,6 +16,7 @@ var fileutil = require('../utils/fileutil.js');
  */
  exports.findUUID = function(tel_uuid, callback){
  	pool.getConnection(function(err, conn){
+ 		console.log('tel_uuid', tel_uuid);
  		if(err) throw err;
  		var sql = 'select user_id, tel_uuid from TBUSR where tel_uuid=?';
  		conn.query(sql, tel_uuid, function(err, row){

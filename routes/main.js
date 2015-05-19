@@ -9,40 +9,40 @@ var db = require('../models/db_config_mongo');
 require('../models/clickmodel');
 var ClickModel = db.model('Click');
 
-router.get('/recmd/item', function(req, res, next){
-	var user_id = req.session.user_id;
+// router.get('/recmd/item', function(req, res, next){
+// 	var user_id = req.session.user_id;
 
-	// 유저가 선택한 item들 찾아서 배열에 넣기
-	ClickModel.distinct("item_id",{user_id:user_id}).exec(function(err, docs){
-		if(err) throw err;
-		console.log('user_id', user_id);
-		console.log('docs', docs);
+// 	// 유저가 선택한 item들 찾아서 배열에 넣기
+// 	ClickModel.distinct("item_id",{user_id:user_id}).exec(function(err, docs){
+// 		if(err) throw err;
+// 		console.log('user_id', user_id);
+// 		console.log('docs', docs);
 
-		var itemArr = [];
-		for(i=0; i<docs.length; i++){
-			itemArr.push(docs[i]);
-		}
-		console.log('itemArr', itemArr);
+// 		var itemArr = [];
+// 		for(i=0; i<docs.length; i++){
+// 			itemArr.push(docs[i]);
+// 		}
+// 		console.log('itemArr', itemArr);
 
-		// user가 클릭한 총 아이템 개수 찾기.
-		ClickModel.find({user_id:user_id}).count().exec(function(err, docs){
-			if(err) throw err;
-			console.log('전체 아이템 개수', docs);
+// 		// user가 클릭한 총 아이템 개수 찾기.
+// 		ClickModel.find({user_id:user_id}).count().exec(function(err, docs){
+// 			if(err) throw err;
+// 			console.log('전체 아이템 개수', docs);
 
-			var arr = [];
-			for(i=0;i<itemArr.length;i++){
-				arr.push((itemArr[i] / docs).toFixed(2));
-			}
-			console.log('arr', arr);
-		});
+// 			var arr = [];
+// 			for(i=0;i<itemArr.length;i++){
+// 				arr.push((itemArr[i] / docs).toFixed(2));
+// 			}
+// 			console.log('arr', arr);
+// 		});
 
-		if(itemArr){
-			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : itemArr});
-		} else{
-			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-		}
-	});
-});
+// 		if(itemArr){
+// 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : itemArr});
+// 		} else{
+// 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+// 		}
+// 	});
+// });
 
 /*
 업무명 : 저장된 UUID 찾기
@@ -51,14 +51,14 @@ url : /main/findUUID
  */
 router.post('/findUUID', function(req, res, next) {
 	var tel_uuid = req.body.tel_uuid;
-
+	if(!tel_uuid) throw err;
 	console.log('tel_uuid', tel_uuid);
 
 	db_main.findUUID(tel_uuid, function(row){
 		console.log('row', row);
 		if(row.length!=0){ // 기존에 저장된 uuid가 있으면
 			console.log('if');
-			user_id = row[0].user_id;
+			var user_id = row[0].user_id;
 			console.log('row[0].user_id', row[0].user_id);
 			console.log('user_id_if', user_id);
 

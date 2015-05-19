@@ -7,6 +7,7 @@ var async = require('async');
 
 router.post('/facebook', function(req, res, next) {
   var token = req.body.access_token;
+  if(!token) throw err;
 
   // 액세스 토큰으로 정보 받아오기.
   function getfbinfo(token, callback) {
