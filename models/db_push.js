@@ -60,14 +60,19 @@ exports.update = function(datas, callback){
  * @return {[array]}            [푸쉬 토큰]
  */
 exports.push = function(callback){
-	poll.getConnection(function(err, conn){
+	pool.getConnection(function(err, conn){
 		if(err) throw err;
 		var sql = "select ps_token from TBPUSH where ps_usecheck='Y'";
 		conn.query(sql, function(err, rows){
 			if(err) throw err;
-			console.log('rows', rows);
+			// console.log('rows', rows);
 			conn.release();
-			callback(rows);
+			var regIds = [];
+			for(var i in rows){
+				regIds.push(rows[i].ps_token);
+			}
+			console.log('regIds', regIds);
+			callback(regIds);
 		});
 	});
 };

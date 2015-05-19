@@ -46,20 +46,34 @@ router.post('/update', function(req, res, next) {
  url : /push
  */
 router.post('/', function(req, res, next){
-	var message = new gcm.Message();
-	var sender = new gcm.Sender('AIzaSyDueiYv4SW-UGzLYfiFNfpmBfzA1NjkRu0');
 	var send_msg = req.body.send_msg;
 	var send_title = req.body.send_title;
 
-	db_push.push(function(result){
-		if(!result) throw "fail";
-		if(result.length > 0){
-			message.addData(send_title);
-			message.addData(send_msg);
-			sender.sendNoRetry(message, result, function(err, result){
-				if(err) throw "fail";
-				res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+	db_push.push(function(registration_ids){
+		if(registration_ids.length > 0){
+			var message = new gcm.Message({
+				collapseKey: 'demo',
+				delayWhileIdle: true,
+				timeToLive: 3,
+				data: {
+					"send_title": send_title,
+					"send_msg": send_msg
+				}
 			});
+			var sender = new gcm.Sender('AIzaSyDueiYv4SW-UGzLYfiFNfpmBfzA1NjkRu0');
+			console.log(message);
+			console.log(registration_ids);
+			sender.send(message, registration_ids, function(err, result){
+				if(err) console.error(err);
+				else    console.log(result);
+				if(result.success==1){
+					res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+				}else{
+					res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+				}
+			});
+		}else{
+			res.json({success : 0, msg : "푸쉬 발송할 디바이스가 없습니다.", result : "fail"});
 		}
 	});
 });

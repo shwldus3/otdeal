@@ -51,6 +51,15 @@ router.post('/', function(req, res, next) {
 	db_item.itemDetail(item_id, function(err, outputData){
 		if(err) throw err;
 		if(outputData){
+			var click = new ClickModel({
+				user_id : user_id,
+				item_id : item_id,
+				gubun : 'click'
+			});
+			click.save(function(err, result){
+				if(err) throw err;
+			});
+
 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result:outputData });
 		}else{
 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
@@ -93,27 +102,14 @@ router.post('/bsk', function(req, res, next) {
 url : /item/order
  */
 router.post('/order', function(req, res, next) {
-	// var inputDummy = {
-	// 	"user_id" : "qwerty",
-	// 	"itemArr" : [{
-	// 		"item_id" : 256,
-	// 		"item_cnt" : 1
-	// 	},{
-	// 		"item_id" : 257,
-	// 		"item_cnt" : 1
-	// 	}],
-	// 	"total_price" : 134500,
-	// };
-	// var itemArr = inputDummy.itemArr;
-	// var user_id = inputDummy.user_id;
-	// var total_price = inputDummy.total_price;
-	var itemArr = req.body.itemArr;
-	var user_id = req.body.user_id;
+	var item_id = req.body.item_id;
+	var item_cnt = req.body.item_cnt;
+	var user_id = req.session.user_id;
 	var total_price = req.body.total_price;
-	logger.debug(itemArr);
+	logger.debug(item_id);
+	logger.debug(item_cnt);
 	logger.debug(user_id);
-	var datas = { 'itemArr' : itemArr, 'user_id' : user_id, 'total_price' : total_price };
-
+	var datas = { 'item_id' : item_id, 'item_cnt' : item_cnt, 'user_id' : user_id, 'total_price' : total_price };
 	db_item.order(datas, function(result){
 		logger.debug(result);
 		if(result){
@@ -130,9 +126,6 @@ router.post('/order', function(req, res, next) {
 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
 		}
 	});
-
-
-
 });
 
 
