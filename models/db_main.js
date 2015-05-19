@@ -229,7 +229,6 @@ exports.recmd_item = function(user_id, callback){
 					//이미지 width, height 가져오기
 					fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
 						if(err) throw err;
-						logger.debug('오긴오는거냐며');
 						callback(null, itemInfoRows);
 					});
 				} else {

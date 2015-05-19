@@ -47,6 +47,7 @@ url : /item
  */
 router.post('/', function(req, res, next) {
 	var item_id = req.body.item_id;
+	var user_id = req.body.user_id;
 	logger.debug(item_id);
 	db_item.itemDetail(item_id, function(err, outputData){
 		if(err) throw err;
