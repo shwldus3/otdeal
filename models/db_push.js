@@ -15,7 +15,7 @@ var pool = mysql.createPool(db_config);
 exports.register = function(datas, callback){
 	pool.getConnection(function(err, conn){
 		if(err) throw err;
-		var sql = "insert into TBPUSH (ps_token, user_id, ps_usecheck, ps_regdate, ps_upregdate, ps_upregtime) values(?, ?, 'Y', now(), now(), current_timestamp)";
+		var sql = "insert into TBPUSH (ps_token, ps_usecheck, ps_regdate, ps_upregdate, ps_upregtime) values(?, 'Y', now(), now(), current_timestamp)";
 		conn.query(sql, datas, function(err, row){
 			if(err) throw err;
 			console.log('row', row);

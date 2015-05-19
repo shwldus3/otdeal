@@ -66,10 +66,10 @@ router.post('/', function(req, res, next){
 			sender.send(message, registration_ids, function(err, result){
 				if(err) console.error(err);
 				else    console.log(result);
-				if(result.success==1){
-					res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+				if(result.success > 0){
+					res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : result});
 				}else{
-					res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+					res.json({success : 0, msg : "에러가 발생하였습니다.", result : result});
 				}
 			});
 		}else{
