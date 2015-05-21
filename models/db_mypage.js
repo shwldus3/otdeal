@@ -43,7 +43,8 @@ exports.usrInfoUpdate = function(dataArr, callback){
 exports.bsklist = function(user_id, callback){
   pool.getConnection(function(err, conn){
     if(err) throw err;
-    var sql = "select bsk.bsk_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_id, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name, img.path, img.img_name from TBBSK bsk ,TBITM itm, TBSZ sz, itemImg img where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id and img.item_id = itm.item_id";
+
+    var sql = "select bsk.bsk_id, bsk.bsk_cnt, bsk.bsk_regdate, bsk.bsk_regtime, itm.item_id, itm.item_name, itm.item_price, itm.item_saleprice, sz.size_name, itm.color_name, img.path, img.img_name from TBBSK bsk ,TBITM itm, TBSZ sz, itemImg img where bsk.user_id = ? and bsk.item_id = itm.item_id and itm.size_id = sz.size_id and if(itm.item_grcd=0 and itm.item_grid is not NULL, img.item_id = itm.item_grid, img.item_id = itm.item_id)";
 
     conn.query(sql, user_id, function(err, rows){
       if(err) throw err;
@@ -105,6 +106,26 @@ exports.bskupdate = function(dataArr, done){
   });
 };
 
+/*
+업무명 : 장바구니 삭제하기
+전송방식 : post
+url : /mypage/basket/delete
+*/
+router.post('/basket/delete', function(req, res, next) {
+
+  var user_id = req.session.user_id;
+  var bsk_id = req.body.bsk_id;
+  if(!user_id) res.json({success : 0, msg : "로그인을 해주세요.", result : "fail"});
+
+  db_mypage.bskdelete(bsk_id, function(result) {
+    if(result){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
+  });
+});
+
 
 /**
  * 찜목록 (위시리스트)
@@ -120,96 +141,12 @@ exports.like = function(user_id, callback){
       if(err) throw err;
       console.log('rows', rows);
       //이미지 width, height 가져오기
-      // fileutil.getFileInfo(rows, function(err, rows){
-      //   if(err) throw err;
-      //   callback(rows);
-      // });
+      fileutil.getFileInfo(rows, function(err, rows){
+        if(err) throw err;
+        callback(rows);
+      });
       conn.release();
-      callback(rows);
+      // callback(rows);
     });
   });
 };
-
-// exports.bskupdate2 = function(dataArr2, done){
-//   pool.getConnection(function(err, conn) {
-
-//     var sql = 'update TBBSK set bsk_cnt=?, bsk_regdate=now(), item_id = ? where user_id=? and bsk_id=?';
-//       conn.query(sql, dataArr, function(err, row){
-//         if(err) console.log('err', err);
-//         console.log('row', row);
-
-//         var success = false;
-//         if(row.affectedRows == 1) {
-//           success = true;
-//         }
-//         done(success);
-//         conn.release();
-//     });
-//   });
-// };
-
-
-
-
-
-// function findGrid(dataArr, callback){
-//   var sql = 'select item_grid from TBITM where item_id=?';
-//   conn.query(sql, dataArr[3], function(err, row){
-//     if(err) console.log('err', err);
-//     console.log('row', row);
-//     callback(null, dataArr, row);
-//   }
-// }
-
-// // user_id에 해당하는 order_id 받아오기
-// select odritm.item_id, odritm.order_id
-// from TBODRITM odritm
-// where odritm.order_id in (select order_id from TBODR where user_id = 'qwerty')
-
-// // order_id에 해당하는 아이템 정보 받아오기
-// select itm.item_name, itm.color_name, sz.size_name, odr.total_price, odr.order_paystat, dlvr.dlvr_stat, odr.order_regdate, odr.order_regtime
-// from TBITM itm, TBSZ sz, TBODR odr, TBDLVR dlvr,
-//     (select *
-//     from TBODRITM odritm
-//     where odritm.order_id = '20150507333333') a
-// where itm.item_id = a.item_id
-// and itm.size_id = sz.size_id
-// and a.order_id = odr.order_id
-// and dlvr.order_id = a.order_id
-
-// var sql2 = "select itm.item_name, itm.color_name, sz.size_name, odr.total_price, odr.order_paystat, dlvr.dlvr_stat, odr.order_regdate, odr.order_regtime from TBITM itm, TBSZ sz, TBODR odr, TBDLVR dlvr, (select * from TBODRITM odritm where odritm.order_id = ?) a where itm.item_id = a.item_id and itm.size_id = sz.size_id and a.order_id = odr.order_id and dlvr.order_id = a.order_id"
-// conn.query(sql2, rows, function(err, rows){
-//   if(err) console.error('err', err);
-//   console.log('sql2 rows', rows);
-
-// });
-
-// exports.orderlist = function(user_id, callback){
-//   pool.getConnection(function(err, conn){
-//     if(err) console.error('err', err);
-//     var sql = "select odritm.item_id, odritm.order_id from TBODRITM odritm where odritm.order_id in (select order_id from TBODR where user_id = ?)";
-//     conn.query(sql, user_id, function(err, rows){
-//       if(err) console.error('err', err);
-//       console.log('rows', rows);
-//       conn.release();
-//       callback(rows);
-//     });
-//   });
-// };
-
-
-// exports.delete = function(dataArr, callback){
-//   pool.getConnection(function(err, conn){
-//     if(err) console.error('err', err);
-//     var sql = "delete from TBODR where user_id=? and order_id=?";
-//     conn.query(sql, dataArr, function(err, row){
-//       if(err) console.error('err', err);
-//       var success = false;
-//       if(row.affectedRows == 1){
-//         success = true;
-//       }
-//       conn.release();
-//       callback(success);
-//     });
-//   });
-// };

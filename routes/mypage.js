@@ -89,6 +89,49 @@ router.post('/basket', function(req, res, next) {
   });
 });
 
+/**
+* 장바구니 삭제
+*/
+exports.bskdelete = function(bsk_id, callback){
+  pool.getConnection(function(err, conn){
+    var result = false;
+    if(err) throw err;
+    if(typeof bsk_id == 'string'){
+      deleteBsk(bsk_id, function(success){
+        console.log(success);
+        callback(success);
+      });
+    }else if(bsk_id.constructor == Array){
+      async.each(bsk_id, function(id, callback){
+        deleteBsk(id, function(success){
+          result = success;
+          callback(null);
+        });
+      }, function(err){
+        if(err) throw err;
+        // console.log(result);
+        callback(result);
+        });
+    }else{
+      callback(false);
+    }
+    conn.release();
+
+    function deleteBsk(id, callback){
+      var sql = "delete from TBBSK where bsk_id=?";
+      conn.query(sql, id, function(err, row){
+        if(err) throw err;
+        console.log('row', row);
+        if(row.affectedRows == 1) {
+          callback(true);
+        }else{
+          callback(false);
+        }
+      });
+    } // deleteBsk
+  });
+};
+
 /*
  업무명 : 찜목록 (위시리스트)
  전송방식 : get
