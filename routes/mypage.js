@@ -89,48 +89,25 @@ router.post('/basket', function(req, res, next) {
   });
 });
 
-/**
-* 장바구니 삭제
+/*
+업무명 : 장바구니 삭제하기
+전송방식 : post
+url : /mypage/basket/delete
 */
-exports.bskdelete = function(bsk_id, callback){
-  pool.getConnection(function(err, conn){
-    var result = false;
-    if(err) throw err;
-    if(typeof bsk_id == 'string'){
-      deleteBsk(bsk_id, function(success){
-        console.log(success);
-        callback(success);
-      });
-    }else if(bsk_id.constructor == Array){
-      async.each(bsk_id, function(id, callback){
-        deleteBsk(id, function(success){
-          result = success;
-          callback(null);
-        });
-      }, function(err){
-        if(err) throw err;
-        // console.log(result);
-        callback(result);
-        });
-    }else{
-      callback(false);
-    }
-    conn.release();
+router.post('/basket/delete', function(req, res, next) {
 
-    function deleteBsk(id, callback){
-      var sql = "delete from TBBSK where bsk_id=?";
-      conn.query(sql, id, function(err, row){
-        if(err) throw err;
-        console.log('row', row);
-        if(row.affectedRows == 1) {
-          callback(true);
-        }else{
-          callback(false);
-        }
-      });
-    } // deleteBsk
+  var user_id = req.session.user_id;
+  var bsk_id = req.body.bsk_id;
+  if(!user_id) res.json({success : 0, msg : "로그인을 해주세요.", result : "fail"});
+
+  db_mypage.bskdelete(bsk_id, function(result) {
+    if(result){
+      res.json({success : 1, msg : "성공적으로 수행되었습니다.", result : "success"});
+    } else {
+      res.json({success : 0, msg : "에러가 발생하였습니다.", result : "fail"});
+    }
   });
-};
+});
 
 /*
  업무명 : 찜목록 (위시리스트)
