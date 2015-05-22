@@ -47,28 +47,53 @@ exports.itemDetail = function(item_id, callback){
 				if(row[0].cnt === 1){
 				// 단일 상품인 경우
 					// logger.debug('[상품정보] results[0] : ', results[0]);
-					// logger.debug('[이미지정보] results[1] : ', results[1]);
-					var outputData = {};
-					outputData = results[0];
-					outputData.imageArr = [];
-					outputData.imageArr = results[1];
-					callback(null, outputData);
+					// logger.debug('[이미지정보] results[1] : ', results[1])
+					getLikeInfo(results[0], item_id, "qwerty", function(outputData){
+						outputData.imageArr = [];
+						outputData.imageArr = results[1];
+						callback(null, outputData);
+					});
 				}else{
 				// 그룹 상품인 경우
 					// logger.debug('[그룹상품정보] results[0][0] : ', results[0][0]);
 					// logger.debug('[단일상품정보] resu	lts[0][1] : ', results[0][1]);
 					// logger.debug('[이미지정보] results[1] : ', results[1]);
-					var outputData = {};
-					outputData = results[0][0];
-					outputData.singleItemArr = results[0][1];
-					outputData.imageArr = results[1];
-					callback(null, outputData);
+
+					getLikeInfo(results[0][0], item_id, "qwerty", function(outputData){
+						outputData.singleItemArr = results[0][1];
+						outputData.imageArr = results[1];
+						callback(null, outputData);
+					});
 				}
 			});
 		});
 	});
 };
 
+/*
+상품상세 좋아요 출력
+ */
+function getLikeInfo(outputData, item_id, user_id, callback){
+	pool.getConnection(function(err, conn){
+		if(err) throw err;
+		var inputArr = [item_id, user_id];
+		var item_like_yn = '';
+		var sql = "select item_id from TBLK where item_id = ? and user_id=?";
+		conn.query(sql, inputArr, function(err, row){
+			if(err) throw err;
+			// logger.debug('row', row);
+			if(row[0]) {
+				item_like_yn = 'Y';
+			}else{
+				item_like_yn = 'N';
+			}
+			// logger.debug('item_like_yn', item_like_yn);
+			outputData.item_like_yn = item_like_yn;
+			logger.debug('outputData',outputData);
+			callback(outputData);
+		});
+	});
+}
 
 /**
  * 메소드 : 상품정보를 가져오는 메소드
@@ -143,7 +168,7 @@ function getImgInfo(item_id, callback){
 		var sql = "select img_id, img_name, img_idx as img_seq, img_viewcd, path, img_thumbnail as thumbnail from TBIMG where item_id=?";
 		conn.query(sql, item_id, function(err, rows){
 			if(err) throw err;
-			// logger.debug(rows);
+			logger.debug(rows);
 			conn.release();
 
 			//이미지 width, height 가져오기
@@ -151,7 +176,7 @@ function getImgInfo(item_id, callback){
 				if(err) throw err;
 				callback(null, imagerows);
 			});
-			// callback(null,rows);
+			callback(null,rows);
 		});
 	});
 }
@@ -270,7 +295,8 @@ function insertTBODRITM(conn, datas, order_id, callback){
 			i++;
 			var click = new ClickModel({
 				user_id : datas.user_id,
-				item_id : item_id
+				item_id : item_id,
+				gubun : 'order'
 			});
 			click.save(function(err, result){
 				if(err) throw err;
