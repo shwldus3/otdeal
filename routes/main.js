@@ -3,46 +3,186 @@ var router = express.Router();
 var db_main = require('../models/db_main');
 var crypto = require('crypto');
 var async = require('async');
+var dateutils = require('date-utils');
 
 // 몽고디비 사용
 var db = require('../models/db_config_mongo');
 require('../models/clickmodel');
 var ClickModel = db.model('Click');
 
-// router.get('/recmd/item', function(req, res, next){
-// 	var user_id = req.session.user_id;
+/*
+추천~~~~
+*/
+router.get('/recmd/item', function(req, res, next){
+	var user_id = req.session.user_id;
+	var clickArr ='';
 
-// 	// 유저가 선택한 item들 찾아서 배열에 넣기
-// 	ClickModel.distinct("item_id",{user_id:user_id}).exec(function(err, docs){
-// 		if(err) throw err;
-// 		console.log('user_id', user_id);
-// 		console.log('docs', docs);
+	// click된 item_id 각각을 받아온다.
+	ClickModel.find({user_id:user_id},{_id:0,item_id:1,regtime:1}).exec(function(err, docs){
+		clickArr = docs;
+	}); // MongoDB
 
-// 		var itemArr = [];
-// 		for(i=0; i<docs.length; i++){
-// 			itemArr.push(docs[i]);
-// 		}
-// 		console.log('itemArr', itemArr);
+	// bsk, order, like된 item_id 각각을 받아온다.
+	db_main.findItemIdArr(user_id, function(dataArr){
+		// console.log('user_id', user_id);
+		// console.log('db_main에서 잘 받아오나 dataArr', dataArr);
+		var bskArr = dataArr[0];
+		var orderArr = dataArr[1];
+		var likeArr = dataArr[2];
+		// console.log('clickArr', clickArr);
+		// console.log('bskArr', bskArr);
+		// console.log('orderArr', orderArr);
+		// console.log('likeArr', likeArr);
 
-// 		// user가 클릭한 총 아이템 개수 찾기.
-// 		ClickModel.find({user_id:user_id}).count().exec(function(err, docs){
-// 			if(err) throw err;
-// 			console.log('전체 아이템 개수', docs);
+		// 시간가중치 적용
+		async.series({
+		  clickArr: function(callback){
+		    // console.log('click');
+				getTimeWeight(clickArr, callback);
+		  },
+		  bskArr: function(callback){
+		  	// console.log('bsk');
+		  	getTimeWeight(bskArr, callback);
+		  },
+		  orderArr: function(callback){
+		  	// console.log('order');
+		  	getTimeWeight(orderArr, callback);
+		  },
+		  likeArr: function(callback){
+		  	// console.log('like');
+		  	getTimeWeight(likeArr, callback);
+		  }
+		}, function(err, result) {
+	    if(err) throw err;
+	    // console.log('result', result);
 
-// 			var arr = [];
-// 			for(i=0;i<itemArr.length;i++){
-// 				arr.push((itemArr[i] / docs).toFixed(2));
-// 			}
-// 			console.log('arr', arr);
-// 		});
+	    // 항목가중치 적용
+	    async.series({
+	      clickArr: function(callback){
+	        // console.log('click');
+	    		getItemWeight(result.clickArr, 0.05, callback);
+	      },
+	      bskArr: function(callback){
+	      	// console.log('bsk');
+	      	getItemWeight(result.bskArr, 0.25, callback);
+	      },
+	      orderArr: function(callback){
+	      	// console.log('order');
+	      	getItemWeight(result.orderArr, 0.5, callback);
+	      },
+	      likeArr: function(callback){
+	      	// console.log('like');
+	      	getItemWeight(result.likeArr, 0.2, callback);
+	      }
+	    }, function(err, result){
+	    	if(err) throw err;
+	    	var clickWeightArr = result.clickArr;
+	    	var bskWeightArr = result.bskArr;
+	    	var orderWeightArr = result.orderArr;
+	    	var likeWeightArr = result.likeArr;
 
-// 		if(itemArr){
-// 			res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : itemArr});
-// 		} else{
-// 			res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
-// 		}
-// 	});
-// });
+	    	var interestArr = [];
+
+	    	// console.log('clickWeightArr', clickWeightArr);
+	    	// console.log('bskWeightArr', bskWeightArr);
+	    	// console.log('orderWeightArr', orderWeightArr);
+	    	// console.log('likeWeightArr', likeWeightArr);
+
+	    	async.each(clickWeightArr, function(data){
+	    		// console.log('data', data);
+	    		interestArr.push(data);
+	    		// console.log('interestArr', interestArr);
+	    		// callback(null, interestArr);
+	    	}, function(err){
+	    		if(err) throw err;
+	    		// console.log('interestArr', interestArr);
+	    	});
+
+	    	async.each(bskWeightArr, function(data){
+	    		// console.log('data', data);
+	    		interestArr.push(data);
+	    		// console.log('interestArr', interestArr);
+	    		// callback(null, interestArr);
+	    	}, function(err){
+	    		if(err) throw err;
+	    	});
+
+	    	async.each(orderWeightArr, function(data){
+	    		// console.log('data', data);
+	    		interestArr.push(data);
+	    		// console.log('interestArr', interestArr);
+	    		// callback(null, interestArr);
+	    	}, function(err){
+	    		if(err) throw err;
+	    	});
+
+	    	async.each(likeWeightArr, function(data){
+	    		// console.log('data', data);
+	    		interestArr.push(data);
+	    		// console.log('interestArr', interestArr);
+	    		// callback(null, interestArr);
+	    	}, function(err){
+	    		if(err) throw err;
+	    		console.log('interestArr', interestArr);
+	    	});
+
+  	    if(interestArr){
+  				res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : interestArr});
+  			}else{
+  				res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+  			}
+
+	    });
+
+	  //   if(result){
+			// 	res.json({ success:1, msg:"성공적으로 수행되었습니다.", result : result});
+			// }else{
+			// 	res.json({ success:0, msg:"수행도중 에러가 발생했습니다." });
+			// }
+		});
+
+	}); // MariaDB
+});
+
+// 시간가중치 얻는 함수
+function getTimeWeight(dataArr, callback){
+	// console.log('dataArr', dataArr);
+	var timeWeightArr = [];
+	async.each(dataArr, function(data, callback){
+		var dayDiff = (data.regtime).getDaysBetween(Date.today());
+
+		if(dayDiff > 1){
+			var log = Math.log(dayDiff) / Math.LN10;
+		} else if(dayDiff = 1) {
+			var log = 0.2
+		} else if(dayDiff = 0) {
+			var log = 0.1
+		}
+		var itemArr = new Array();
+		itemArr[0] = data.item_id;
+		itemArr[1] = log;
+		timeWeightArr.push(itemArr);
+		// console.log('dayDiff', dayDiff);
+		// console.log('log', log);
+		callback(null, timeWeightArr);
+	}, function(err){
+		if(err) throw err;
+		// console.log('timeWeightArr', timeWeightArr);
+		callback(null, timeWeightArr);
+	});
+}
+
+// 항목 가중치 얻는 함수
+function getItemWeight(dataArr, itemweight, callback){
+	async.each(dataArr, function(data){
+		data[1] = (data[1]*itemweight).toFixed(3);
+		// console.log('data',data);
+		// console.log('dataArr', dataArr);
+		callback(null, dataArr);
+	}, function(err){
+		if(err) throw err;
+	});
+}
 
 /*
 업무명 : 저장된 UUID 찾기
@@ -135,7 +275,8 @@ router.post('/userinfo', function(req, res, next) {
  	for(i=0; i<3; i++){
  		var click = new ClickModel({
  			item_id : itemArr[i],
- 			user_id : user_id
+ 			user_id : user_id,
+ 			regtime : Date.now()
  		});
  		click.save(function(err, doc){
  			if(err) throw err;
@@ -241,7 +382,7 @@ url : /main/recent
  */
 router.post('/recent', function(req, res, next) {
 	var user_id = req.body.user_id;
-	ClickModel.find({user_id:user_id},{item_id:1}).sort({regtime:-1}).limit(10).exec(function(err, docs){
+	ClickModel.find({user_id:user_id},{item_id:1}).sort({regtime:-1}).skip(3).limit(10).exec(function(err, docs){
 		if(err) throw err;
 		// console.log('docs', docs);
 		// console.log('JSON.stringify(docs)', JSON.stringify(docs));
@@ -338,8 +479,7 @@ router.post('/like', function(req, res, next) {
 			if(result){
 				var click = new ClickModel({
 					user_id : user_id,
-					item_id : item_id,
-					gubun : 'like'
+					item_id : item_id
 				});
 				click.save(function(err, result){
 					if(err) throw err;

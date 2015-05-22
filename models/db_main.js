@@ -8,6 +8,68 @@ var pool = mysql.createPool(db_config);
 var async = require('async');
 var fileutil = require('../utils/fileutil.js');
 
+exports.findItemIdArr = function(user_id, callback){
+	pool.getConnection(function(err, conn){
+		async.series([
+			function(callback){
+				findbskArr(user_id, callback);
+	    },
+	    function(callback){
+	    	findorderArr(user_id, callback);
+	    },
+	    function(callback){
+	    	findlikeArr(user_id, callback);
+	    }
+		], function(err, result){
+			if(err) throw err;
+			// console.log('result', result);
+			conn.release();
+			callback(result);
+		});
+
+		function findbskArr(user_id, callback){
+			// console.log('user_id', user_id);
+			if(err) throw err;
+			var sql = 'select if(itm.item_grcd=0 and itm.item_grid is not NULL, itm.item_grid, bsk.item_id) as item_id, bsk.bsk_regtime as regtime from TBBSK bsk, TBITM itm where bsk.user_id = ? and itm.item_id = bsk.item_id';
+			conn.query(sql, user_id, function(err, rows){
+				if(err) throw err;
+				// console.log('rows', rows);
+				// conn.release();
+				callback(null, rows);
+			});
+		}
+
+		function findorderArr(user_id, callback){
+			// console.log('user_id', user_id);
+			if(err) throw err;
+			var sql = 'select if(itm.item_grcd=0 and itm.item_grid is not NULL, itm.item_grid, odritm.item_id) as item_id, odr.order_regtime as regtime from TBODR odr, TBODRITM odritm, TBITM itm where user_id = ? and odritm.order_id = odr.order_id and itm.item_id = odritm.item_id';
+			conn.query(sql, user_id, function(err, rows){
+				if(err) throw err;
+				// console.log('rows', rows);
+				// conn.release();
+				callback(null, rows);
+			});
+		}
+
+		function findlikeArr(user_id, callback){
+			// console.log('user_id', user_id);
+			if(err) throw err;
+			var sql = 'select item_id, like_regtime as regtime from TBLK where user_id = ?';
+			conn.query(sql, user_id, function(err, rows){
+				if(err) throw err;
+				// console.log('rows', rows);
+				// conn.release();
+				callback(null, rows);
+			});
+		}
+
+	});
+};
+
+
+
+
+
 /**
  * 업무명 : UUID 찾기
  * @param  {[string]}   tel_uuid [사용자UUID]
@@ -123,11 +185,11 @@ var fileutil = require('../utils/fileutil.js');
  				if(err) throw err;
  				if(itemimgArr){
  					//이미지 width, height 가져오기
- 					fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
- 						// if(err) throw err;
- 						callback(null, itemimgArr);
- 					});
- 					// callback(null, itemimgArr);
+ 					// fileutil.getFileInfo(itemimgArr, function(err, itemimgArr){
+ 					// 	// if(err) throw err;
+ 					// 	callback(null, itemimgArr);
+ 					// });
+ 					callback(null, itemimgArr);
  				} else {
  					callback(null, false);
  				}
@@ -227,10 +289,11 @@ exports.recmd_item = function(user_id, callback){
 					logger.debug(itemInfoRows);
 					// logger.debug(itemInfoRows);
 					//이미지 width, height 가져오기
-					fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-						if(err) throw err;
-						callback(null, itemInfoRows);
-					});
+					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
+					// 	if(err) throw err;
+					// 	callback(null, itemInfoRows);
+					// });
+ 					callback(null, itemInfoRows);
 				} else {
 					callback(null, false);
 				}
@@ -304,11 +367,12 @@ exports.recmd_oneforyou = function(user_id, callback){
 				if(itemInfoRows){
 					// logger.debug(itemInfoRows);
 					//이미지 width, height 가져오기
-					fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-						if(err) throw err;
-						logger.debug('오긴오는거냐며');
-						callback(null, itemInfoRows);
-					});
+					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
+					// 	if(err) throw err;
+					// 	logger.debug('오긴오는거냐며');
+					// 	callback(null, itemInfoRows);
+					// });
+ 						callback(null, itemInfoRows);
 				} else {
 					callback(null, false);
 				}
@@ -383,11 +447,12 @@ exports.recmd_like = function(user_id, callback){
 				if(itemInfoRows){
 					// logger.debug(itemInfoRows);
 					//이미지 width, height 가져오기
-					fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-						if(err) throw err;
-						logger.debug('오긴오는거냐며');
-						callback(null, itemInfoRows);
-					});
+					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
+					// 	if(err) throw err;
+					// 	logger.debug('오긴오는거냐며');
+					// 	callback(null, itemInfoRows);
+					// });
+ 			callback(null, itemInfoRows);
 				} else {
 					callback(null, false);
 				}
@@ -483,11 +548,12 @@ exports.category = function(inputData, callback){
 				if(itemInfoRows){
 					// logger.debug(itemInfoRows);
 					//이미지 width, height 가져오기
-					fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-						if(err) throw err;
-						logger.debug('오긴오는거냐며');
-						callback(null, itemInfoRows);
-					});
+					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
+					// 	if(err) throw err;
+					// 	logger.debug('오긴오는거냐며');
+					// 	callback(null, itemInfoRows);
+					// });
+ 					callback(null, itemInfoRows);
 				} else {
 					callback(null, false);
 				}

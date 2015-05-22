@@ -270,8 +270,7 @@ function insertTBODRITM(conn, datas, order_id, callback){
 			i++;
 			var click = new ClickModel({
 				user_id : datas.user_id,
-				item_id : item_id,
-				gubun : 'order'
+				item_id : item_id
 			});
 			click.save(function(err, result){
 				if(err) throw err;

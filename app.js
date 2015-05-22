@@ -17,6 +17,15 @@ var push = require('./routes/push');
 
 var app = express();
 
+var get_ip = require('ipware')().get_ip;
+
+app.use(function(req, res, next) {
+    var ip_info = get_ip(req);
+    console.log(ip_info);
+    // { clientIp: '127.0.0.1', clientIpRoutable: false }
+    next();
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
