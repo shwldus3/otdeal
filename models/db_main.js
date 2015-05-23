@@ -8,67 +8,6 @@ var pool = mysql.createPool(db_config);
 var async = require('async');
 var fileutil = require('../utils/fileutil.js');
 
-exports.findItemIdArr = function(user_id, callback){
-	pool.getConnection(function(err, conn){
-		async.series([
-			function(callback){
-				findbskArr(user_id, callback);
-	    },
-	    function(callback){
-	    	findorderArr(user_id, callback);
-	    },
-	    function(callback){
-	    	findlikeArr(user_id, callback);
-	    }
-		], function(err, result){
-			if(err) throw err;
-			// console.log('result', result);
-			conn.release();
-			callback(result);
-		});
-
-		function findbskArr(user_id, callback){
-			// console.log('user_id', user_id);
-			if(err) throw err;
-			var sql = 'select if(itm.item_grcd=0 and itm.item_grid is not NULL, itm.item_grid, bsk.item_id) as item_id, bsk.bsk_regtime as regtime from TBBSK bsk, TBITM itm where bsk.user_id = ? and itm.item_id = bsk.item_id';
-			conn.query(sql, user_id, function(err, rows){
-				if(err) throw err;
-				// console.log('rows', rows);
-				// conn.release();
-				callback(null, rows);
-			});
-		}
-
-		function findorderArr(user_id, callback){
-			// console.log('user_id', user_id);
-			if(err) throw err;
-			var sql = 'select if(itm.item_grcd=0 and itm.item_grid is not NULL, itm.item_grid, odritm.item_id) as item_id, odr.order_regtime as regtime from TBODR odr, TBODRITM odritm, TBITM itm where user_id = ? and odritm.order_id = odr.order_id and itm.item_id = odritm.item_id';
-			conn.query(sql, user_id, function(err, rows){
-				if(err) throw err;
-				// console.log('rows', rows);
-				// conn.release();
-				callback(null, rows);
-			});
-		}
-
-		function findlikeArr(user_id, callback){
-			// console.log('user_id', user_id);
-			if(err) throw err;
-			var sql = 'select item_id, like_regtime as regtime from TBLK where user_id = ?';
-			conn.query(sql, user_id, function(err, rows){
-				if(err) throw err;
-				// console.log('rows', rows);
-				// conn.release();
-				callback(null, rows);
-			});
-		}
-
-	});
-};
-
-
-
-
 
 /**
  * 업무명 : UUID 찾기
@@ -410,7 +349,7 @@ exports.recmd_like = function(user_id, callback){
 
 
  		function getItemInfo(callback){
- 			var sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.item_cnt='1' order by launch_date desc";
+ 			var sql = "select count(lk.item_id) as cnt, lk.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBLK lk, TBITM itm, TBIMG img where itm.item_id = lk.item_id and lk.item_id = img.item_id and img.img_thumbnail = 'Y' group by lk.item_id order by cnt desc";
 			conn.query(sql, user_id, function(err, itemInfoRows){
 				if(err) throw err;
 				// console.log('itemInfoRows', itemInfoRows);
@@ -509,7 +448,7 @@ exports.category = function(inputData, callback){
  					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_sale desc";
  					break;
  				default:
- 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by launch_date desc";
+ 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
  			}
 
 			conn.query(sql, ctg_id, function(err, itemInfoRows){
