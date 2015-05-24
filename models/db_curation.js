@@ -1,4 +1,4 @@
-// db_recommend.js
+// db_curation.js
 
 var mysql = require('mysql');
 var logger = require('../routes/static/logger.js');
@@ -7,6 +7,19 @@ var pool = mysql.createPool(db_config);
 var async = require('async');
 var fileutil = require('../utils/fileutil.js');
 
+exports.findUserId = function(callback){
+	pool.getConnection(function(err, conn){
+		if(err) throw err;
+		var sql = 'select user_id from TBUSR';
+
+		conn.query(sql, [], function(err, rows){
+			if(err) throw err;
+			// console.log('rows', rows);
+			conn.release();
+			callback(rows);
+		});
+	});
+};
 
 exports.findItemIdArr = function(user_id, callback){
 	pool.getConnection(function(err, conn){
