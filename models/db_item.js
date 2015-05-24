@@ -21,7 +21,7 @@ var ClickModel = db.model('Click');
  * @param  {Function} callback
  * @return {[array]}            [상품배열, 이미지배열]
  */
-exports.itemDetail = function(item_id, callback){
+exports.itemDetail = function(item_id, user_id, callback){
 	pool.getConnection(function(err, conn){
 		if(err) throw err;
 		var sql = "select count(*) as cnt from TBITM where item_id=? or item_grid=?";
@@ -48,7 +48,7 @@ exports.itemDetail = function(item_id, callback){
 				// 단일 상품인 경우
 					// logger.debug('[상품정보] results[0] : ', results[0]);
 					// logger.debug('[이미지정보] results[1] : ', results[1])
-					getLikeInfo(results[0], item_id, "qwerty", function(outputData){
+					getLikeInfo(results[0], item_id, user_id, function(outputData){
 						outputData.imageArr = [];
 						outputData.imageArr = results[1];
 						callback(null, outputData);
@@ -59,7 +59,7 @@ exports.itemDetail = function(item_id, callback){
 					// logger.debug('[단일상품정보] resu	lts[0][1] : ', results[0][1]);
 					// logger.debug('[이미지정보] results[1] : ', results[1]);
 
-					getLikeInfo(results[0][0], item_id, "qwerty", function(outputData){
+					getLikeInfo(results[0][0], item_id, user_id, function(outputData){
 						outputData.singleItemArr = results[0][1];
 						outputData.imageArr = results[1];
 						callback(null, outputData);
@@ -81,7 +81,9 @@ function getLikeInfo(outputData, item_id, user_id, callback){
 		var sql = "select item_id from TBLK where item_id = ? and user_id=?";
 		conn.query(sql, inputArr, function(err, row){
 			if(err) throw err;
-			// logger.debug('row', row);
+			logger.debug('row', row);
+			console.log(row);
+
 			if(row[0]) {
 				item_like_yn = 'Y';
 			}else{
@@ -90,6 +92,7 @@ function getLikeInfo(outputData, item_id, user_id, callback){
 			// logger.debug('item_like_yn', item_like_yn);
 			outputData.item_like_yn = item_like_yn;
 			logger.debug('outputData',outputData);
+			conn.release();
 			callback(outputData);
 		});
 	});
@@ -176,7 +179,7 @@ function getImgInfo(item_id, callback){
 				if(err) throw err;
 				callback(null, imagerows);
 			});
-			callback(null,rows);
+			// callback(null,rows);
 		});
 	});
 }
