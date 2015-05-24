@@ -12,20 +12,24 @@ var utils = {
 	getFileInfo : function (rows, callback){
 		var filepath;
 		async.eachSeries(rows, function(row, callback){
-			// logger.debug(row);
-			filepath = path.join('./public', row.path, row.img_name);
-			// logger.debug(filepath);
-			imagemagick.identify(filepath, function(err, features){
-				if (err){
-					row.width = null;
-					row.height = null;
-					callback(null);
-				}else{
-					row.width = features.width;
-					row.height = features.height;
-					callback(null);
-				}
-			});
+			// logger.debug(row.img_viewcd);
+			if(row.img_viewcd == 1){
+				filepath = path.join('./public', row.path, row.img_name);
+				// logger.debug(filepath);
+				imagemagick.identify(filepath, function(err, features){
+					if (err){
+						row.width = null;
+						row.height = null;
+						callback(null);
+					}else{
+						row.width = features.width;
+						row.height = features.height;
+						callback(null);
+					}
+				});
+			}else{
+				callback(null);
+			}
 		}, function(err){
 			// each(for) 문장 처리 후 결과 처리과정
 			callback(null, rows);
