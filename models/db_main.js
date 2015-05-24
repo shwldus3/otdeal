@@ -174,11 +174,14 @@ exports.recmd_item = function(user_id, callback){
 		if(err) throw err;
 
 		async.waterfall([
- 			function(callback){
- 				getItemInfo(callback);
+			function(callback){
+ 				findUserExistItemInfo(user_id, conn, callback);
+ 			},
+ 			function(exist, callback){
+ 				getItemInfo_checkCRT(exist, user_id, "item", conn, callback)
  			},
  			function(itemInfoRows, callback){
- 				getLikeYn(itemInfoRows, callback);
+ 				getLikeYn(user_id, itemInfoRows, conn, callback);
  			}
  		],
  		function(err, result){
@@ -187,59 +190,10 @@ exports.recmd_item = function(user_id, callback){
  			conn.release();
  			callback(result);
  		});
-
-
- 		function getItemInfo(callback){
- 			var sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' order by launch_date desc";
-			conn.query(sql, user_id, function(err, itemInfoRows){
-				if(err) throw err;
-				// console.log('itemInfoRows', itemInfoRows);
-				if(itemInfoRows){
-					callback(null, itemInfoRows);
-				}else{
-					callback(null);
-				}
-			});
- 		}
-
-
- 		function getLikeYn(itemInfoRows, callback){
- 			async.each(itemInfoRows, function(itemInfoRow, callback){
-				// logger.debug('item_id', itemInfoRow.item_id);
-				var inputArr = [itemInfoRow.item_id, user_id];
-				var item_like_yn = '';
-				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
-				conn.query(sql, inputArr, function(err, row){
-					if(err) throw err;
-					// logger.debug('row', row);
-					if(row[0]) {
-						item_like_yn = 'Y';
-					}else{
-						item_like_yn = 'N';
-					}
-					// logger.debug('item_like_yn', item_like_yn);
-					itemInfoRow.item_like_yn = item_like_yn;
-					// logger.debug('row',itemInfoRow);
-					callback(null);
-				});
-			}, function(err){
-				if(err) throw err;
-				if(itemInfoRows){
-					logger.debug(itemInfoRows);
-					// logger.debug(itemInfoRows);
-					//이미지 width, height 가져오기
-					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-					// 	if(err) throw err;
-					// 	callback(null, itemInfoRows);
-					// });
- 					callback(null, itemInfoRows);
-				} else {
-					callback(null, false);
-				}
-			});
- 		};
 	});
 };
+
+
 
 
 /**
@@ -253,11 +207,14 @@ exports.recmd_oneforyou = function(user_id, callback){
 		if(err) throw err;
 
 		async.waterfall([
- 			function(callback){
- 				getItemInfo(callback);
+			function(callback){
+ 				findUserExistItemInfo(user_id, conn, callback);
+ 			},
+ 			function(exist, callback){
+ 				getItemInfo_checkCRT(exist, user_id, "oneforyou", conn, callback);
  			},
  			function(itemInfoRows, callback){
- 				getLikeYn(itemInfoRows, callback);
+ 				getLikeYn(user_id, itemInfoRows, conn, callback);
  			}
  		],
  		function(err, result){
@@ -266,60 +223,8 @@ exports.recmd_oneforyou = function(user_id, callback){
  			conn.release();
  			callback(result);
  		});
-
-
- 		function getItemInfo(callback){
- 			var sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.item_cnt, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.item_cnt='1' order by launch_date desc";
-			conn.query(sql, user_id, function(err, itemInfoRows){
-				if(err) throw err;
-				// console.log('itemInfoRows', itemInfoRows);
-				if(itemInfoRows){
-					callback(null, itemInfoRows);
-				}else{
-					callback(null);
-				}
-			});
- 		}
-
-
- 		function getLikeYn(itemInfoRows, callback){
- 			async.each(itemInfoRows, function(itemInfoRow, callback){
-				// logger.debug('item_id', itemInfoRow.item_id);
-				var inputArr = [itemInfoRow.item_id, user_id];
-				var item_like_yn = '';
-				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
-				conn.query(sql, inputArr, function(err, row){
-					if(err) throw err;
-					// logger.debug('row', row);
-					if(row[0]) {
-						item_like_yn = 'Y';
-					}else{
-						item_like_yn = 'N';
-					}
-					// logger.debug('item_like_yn', item_like_yn);
-					itemInfoRow.item_like_yn = item_like_yn;
-					// logger.debug('row',itemInfoRow);
-					callback(null);
-				});
-			}, function(err){
-				if(err) throw err;
-				if(itemInfoRows){
-					// logger.debug(itemInfoRows);
-					//이미지 width, height 가져오기
-					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-					// 	if(err) throw err;
-					// 	logger.debug('오긴오는거냐며');
-					// 	callback(null, itemInfoRows);
-					// });
- 						callback(null, itemInfoRows);
-				} else {
-					callback(null, false);
-				}
-			});
- 		};
 	});
 };
-
 
 
 /**
@@ -334,10 +239,10 @@ exports.recmd_like = function(user_id, callback){
 
 		async.waterfall([
  			function(callback){
- 				getItemInfo(callback);
+ 				getItemInfo_checkNone(user_id, "like", conn, callback);
  			},
  			function(itemInfoRows, callback){
- 				getLikeYn(itemInfoRows, callback);
+ 				getLikeYn(user_id, itemInfoRows, conn, callback);
  			}
  		],
  		function(err, result){
@@ -346,57 +251,6 @@ exports.recmd_like = function(user_id, callback){
  			conn.release();
  			callback(result);
  		});
-
-
- 		function getItemInfo(callback){
- 			var sql = "select count(lk.item_id) as cnt, lk.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBLK lk, TBITM itm, TBIMG img where itm.item_id = lk.item_id and lk.item_id = img.item_id and img.img_thumbnail = 'Y' group by lk.item_id order by cnt desc";
-			conn.query(sql, user_id, function(err, itemInfoRows){
-				if(err) throw err;
-				// console.log('itemInfoRows', itemInfoRows);
-				if(itemInfoRows){
-					callback(null, itemInfoRows);
-				}else{
-					callback(null);
-				}
-			});
- 		}
-
-
- 		function getLikeYn(itemInfoRows, callback){
- 			async.each(itemInfoRows, function(itemInfoRow, callback){
-				// logger.debug('item_id', itemInfoRow.item_id);
-				var inputArr = [itemInfoRow.item_id, user_id];
-				var item_like_yn = '';
-				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
-				conn.query(sql, inputArr, function(err, row){
-					if(err) throw err;
-					// logger.debug('row', row);
-					if(row[0]) {
-						item_like_yn = 'Y';
-					}else{
-						item_like_yn = 'N';
-					}
-					// logger.debug('item_like_yn', item_like_yn);
-					itemInfoRow.item_like_yn = item_like_yn;
-					// logger.debug('row',itemInfoRow);
-					callback(null);
-				});
-			}, function(err){
-				if(err) throw err;
-				if(itemInfoRows){
-					// logger.debug(itemInfoRows);
-					//이미지 width, height 가져오기
-					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-					// 	if(err) throw err;
-					// 	logger.debug('오긴오는거냐며');
-					// 	callback(null, itemInfoRows);
-					// });
- 			callback(null, itemInfoRows);
-				} else {
-					callback(null, false);
-				}
-			});
- 		};
 	});
 };
 
@@ -418,10 +272,10 @@ exports.category = function(inputData, callback){
 
 		async.waterfall([
  			function(callback){
- 				getItemInfo(callback);
+ 				getItemInfo_checkSort("category", sort_gubun, ctg_id, conn, callback);
  			},
  			function(itemInfoRows, callback){
- 				getLikeYn(itemInfoRows, callback);
+ 				getLikeYn(user_id, itemInfoRows, conn, callback);
  			}
  		],
  		function(err, result){
@@ -430,76 +284,163 @@ exports.category = function(inputData, callback){
  			conn.release();
  			callback(result);
  		});
-
-
- 		function getItemInfo(callback){
- 			var sql = "";
- 			switch(sort_gubun){
- 				case '0': //최신순
- 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by launch_date desc";
- 					break;
- 				case '1': //높은 가격순
- 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice desc";
- 					break;
- 				case '2': //낮은 가격순
- 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice asc";
- 					break;
- 				case '3': //할인율순
- 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_sale desc";
- 					break;
- 				default:
- 					sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
- 			}
-
-			conn.query(sql, ctg_id, function(err, itemInfoRows){
-				if(err) throw err;
-				// console.log('itemInfoRows', itemInfoRows);
-				if(itemInfoRows){
-					callback(null, itemInfoRows);
-				}else{
-					callback(null);
-				}
-			});
- 		}
-
-
- 		function getLikeYn(itemInfoRows, callback){
- 			async.each(itemInfoRows, function(itemInfoRow, callback){
-				// logger.debug('item_id', itemInfoRow.item_id);
-				var inputArr = [itemInfoRow.item_id, user_id];
-				var item_like_yn = '';
-				var sql = "select item_id from TBLK where item_id = ? and user_id=?";
-				conn.query(sql, inputArr, function(err, row){
-					if(err) throw err;
-					// logger.debug('row', row);
-					if(row[0]) {
-						item_like_yn = 'Y';
-					}else{
-						item_like_yn = 'N';
-					}
-					// logger.debug('item_like_yn', item_like_yn);
-					itemInfoRow.item_like_yn = item_like_yn;
-					// logger.debug('row',itemInfoRow);
-					callback(null);
-				});
-			}, function(err){
-				if(err) throw err;
-				if(itemInfoRows){
-					// logger.debug(itemInfoRows);
-					//이미지 width, height 가져오기
-					// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
-					// 	if(err) throw err;
-					// 	logger.debug('오긴오는거냐며');
-					// 	callback(null, itemInfoRows);
-					// });
- 					callback(null, itemInfoRows);
-				} else {
-					callback(null, false);
-				}
-			});
- 		};
 	});
 };
+
+
+
+function findUserExistItemInfo(user_id, conn, callback){
+	var sql = "select count(*) as cnt from TBCRT where user_id = ?";
+	conn.query(sql, user_id, function(err, row){
+		if(err) throw err;
+		logger.debug('row[0].cnt', row[0].cnt);
+		if(row[0].cnt > 0){
+			callback(null, "Y");
+		}else{
+			callback(null, "N");
+		}
+	});
+}
+
+
+/**
+ * 제어가 없는 아이템 정보 리스트
+ * @param  {[type]}   user_id  [description]
+ * @param  {[type]}   gubun    [description]
+ * @param  {[type]}   conn     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+function getItemInfo_checkNone(user_id, gubun, conn, callback){
+	var sql;
+	if(gubun == "like"){
+		sql = "select count(lk.item_id) as cnt, lk.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBLK lk, TBITM itm, TBIMG img where itm.item_id = lk.item_id and lk.item_id = img.item_id and img.img_thumbnail = 'Y' group by lk.item_id order by cnt desc";
+	}
+	conn.query(sql, user_id, function(err, itemInfoRows){
+		if(err) throw err;
+		// console.log('itemInfoRows', itemInfoRows);
+		if(itemInfoRows){
+			callback(null, itemInfoRows);
+		}else{
+			callback(null);
+		}
+	});
+}
+
+
+/**
+ * 검색 조건을 이용한 아이템 정보 리스트
+ * @param  {[type]}   user_id    [description]
+ * @param  {[type]}   gubun      [description]
+ * @param  {[type]}   sort_gubun [description]
+ * @param  {[type]}   ctg_id     [description]
+ * @param  {[type]}   conn       [description]
+ * @param  {Function} callback   [description]
+ * @return {[type]}              [description]
+ */
+function getItemInfo_checkSort(gubun, sort_gubun, ctg_id, conn, callback){
+	var sql;
+	if(gubun == "category"){
+		switch(sort_gubun){
+			case '0': //최신순
+				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
+				break;
+			case '1': //높은 가격순
+				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice desc";
+				break;
+			case '2': //낮은 가격순
+				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice asc";
+				break;
+			case '3': //할인율순
+				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_sale desc";
+				break;
+			default:
+				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
+		}
+	}
+	conn.query(sql, ctg_id, function(err, itemInfoRows){
+		if(err) throw err;
+		// console.log('itemInfoRows', itemInfoRows);
+		if(itemInfoRows){
+			callback(null, itemInfoRows);
+		}else{
+			callback(null);
+		}
+	});
+}
+
+
+/**
+ *  추천, 세상에 단하나에서 사용되는 아이템 정보 리스트
+ * @param  {[type]}   exist    [description]
+ * @param  {[type]}   conn     [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+function getItemInfo_checkCRT(exist, user_id, gubun, conn, callback){
+	var sql;
+	if(gubun == "item"){
+		if(exist = "Y"){
+			sql = "select crt.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBCRT as crt, TBITM as itm, TBIMG as img where crt.user_id = ? and img.item_id = crt.item_id and img.img_thumbnail = 'Y' and itm.item_id = crt.item_id order by crt.score asc";
+		}else{
+			sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
+		}
+	}else if(gubun == "oneforyou"){
+		if(exist = "Y"){
+			sql = "select crt.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBCRT as crt, TBITM as itm, TBIMG as img where crt.user_id = ? and img.item_id = crt.item_id and img.img_thumbnail = 'Y' and itm.item_id = crt.item_id and itm.item_cnt='1' order by crt.score asc";
+		}else{
+			sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
+		}
+	}
+
+	conn.query(sql, user_id, function(err, itemInfoRows){
+		if(err) throw err;
+		// console.log('itemInfoRows', itemInfoRows);
+		if(itemInfoRows){
+			callback(null, itemInfoRows);
+		}else{
+			callback(null);
+		}
+	});
+}
+
+
+function getLikeYn(user_id, itemInfoRows, conn, callback){
+	async.each(itemInfoRows, function(itemInfoRow, callback){
+		// logger.debug('item_id', itemInfoRow.item_id);
+		var inputArr = [itemInfoRow.item_id, user_id];
+		var item_like_yn = '';
+		var sql = "select item_id from TBLK where item_id = ? and user_id=?";
+		conn.query(sql, inputArr, function(err, row){
+			if(err) throw err;
+			// logger.debug('row', row);
+			if(row[0]) {
+				item_like_yn = 'Y';
+			}else{
+				item_like_yn = 'N';
+			}
+			// logger.debug('item_like_yn', item_like_yn);
+			itemInfoRow.item_like_yn = item_like_yn;
+			// logger.debug('row',itemInfoRow);
+			callback(null);
+		});
+	}, function(err){
+		if(err) throw err;
+		if(itemInfoRows){
+			// logger.debug(itemInfoRows);
+			//이미지 width, height 가져오기
+			// fileutil.getFileInfo(itemInfoRows, function(err, itemInfoRows){
+			// 	if(err) throw err;
+			// 	logger.debug('오긴오는거냐며');
+			// 	callback(null, itemInfoRows);
+			// });
+		callback(null, itemInfoRows);
+		} else {
+			callback(null, false);
+		}
+	});
+};
+
 
 
 /**

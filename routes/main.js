@@ -3,8 +3,6 @@ var router = express.Router();
 var db_main = require('../models/db_main');
 var crypto = require('crypto');
 var async = require('async');
-var dateutils = require('date-utils');
-var HashMap = require('hashmap');
 
 // 몽고디비 사용
 var db = require('../models/db_config_mongo');
