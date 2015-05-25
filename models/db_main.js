@@ -239,7 +239,7 @@ exports.recmd_like = function(user_id, callback){
 
 		async.waterfall([
  			function(callback){
- 				getItemInfo_checkNone(user_id, "like", conn, callback);
+ 				getItemInfo_checkNone(user_id, conn, callback);
  			},
  			function(itemInfoRows, callback){
  				getLikeYn(user_id, itemInfoRows, conn, callback);
@@ -305,17 +305,10 @@ function findUserExistItemInfo(user_id, conn, callback){
 
 /**
  * 제어가 없는 아이템 정보 리스트
- * @param  {[type]}   user_id  [description]
- * @param  {[type]}   gubun    [description]
- * @param  {[type]}   conn     [description]
- * @param  {Function} callback [description]
- * @return {[type]}            [description]
  */
-function getItemInfo_checkNone(user_id, gubun, conn, callback){
+function getItemInfo_checkNone(user_id, conn, callback){
 	var sql;
-	if(gubun == "like"){
-		sql = "select count(lk.item_id) as cnt, lk.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBLK lk, TBITM itm, TBIMG img where itm.item_id = lk.item_id and lk.item_id = img.item_id and img.img_thumbnail = 'Y' group by lk.item_id order by cnt desc";
-	}
+	sql = "select count(lk.item_id) as cnt, lk.item_id, itm.item_name, itm.item_price, itm.item_saleprice, Floor((itm.item_price-itm.item_saleprice)/itm.item_price*100) as item_sale, itm.launch_date, itm.item_regdate, itm.item_regtime, img.img_id, img.path, img.img_name from TBLK lk, TBITM itm, TBIMG img where itm.item_id = lk.item_id and lk.item_id = img.item_id and img.img_thumbnail = 'Y' group by lk.item_id order by cnt desc";
 	conn.query(sql, user_id, function(err, itemInfoRows){
 		if(err) throw err;
 		// console.log('itemInfoRows', itemInfoRows);
@@ -330,13 +323,6 @@ function getItemInfo_checkNone(user_id, gubun, conn, callback){
 
 /**
  * 검색 조건을 이용한 아이템 정보 리스트
- * @param  {[type]}   user_id    [description]
- * @param  {[type]}   gubun      [description]
- * @param  {[type]}   sort_gubun [description]
- * @param  {[type]}   ctg_id     [description]
- * @param  {[type]}   conn       [description]
- * @param  {Function} callback   [description]
- * @return {[type]}              [description]
  */
 function getItemInfo_checkSort(gubun, sort_gubun, ctg_id, conn, callback){
 	var sql;
@@ -352,7 +338,7 @@ function getItemInfo_checkSort(gubun, sort_gubun, ctg_id, conn, callback){
 				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_saleprice asc";
 				break;
 			case '3': //할인율순
-				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_sale desc";
+				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by item_sale desc";
 				break;
 			default:
 				sql = "select a.item_id, a.item_name, a.item_price, a.item_saleprice, Floor((a.item_price-a.item_saleprice)/a.item_price*100) as item_sale, a.launch_date, a.item_regdate, a.item_regtime, b.img_id, b.path, b.img_name from TBITM as a, TBIMG as b where (item_grcd=0 and item_grid is NULL or item_grcd=1 and item_grid is NULL) and a.item_id = b.item_id and b.img_thumbnail = 'Y' and a.ctg_id = ? order by a.item_regdate desc";
@@ -372,10 +358,7 @@ function getItemInfo_checkSort(gubun, sort_gubun, ctg_id, conn, callback){
 
 /**
  *  추천, 세상에 단하나에서 사용되는 아이템 정보 리스트
- * @param  {[type]}   exist    [description]
- * @param  {[type]}   conn     [description]
- * @param  {Function} callback [description]
- * @return {[type]}            [description]
+ *  (추천정보에 맞춰 진행되기 때문에 기존 추천정보 여부 확인함)
  */
 function getItemInfo_checkCRT(exist, user_id, gubun, conn, callback){
 	var sql;
