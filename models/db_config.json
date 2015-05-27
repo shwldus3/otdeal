@@ -1,5 +1,5 @@
 {
-  "connectionLimit" : 3,
+  "connectionLimit" : 100,
   "host"			: "52.68.48.66",
   "user" 			: "roqkf",
   "password" 		: "roqkf!@34",
